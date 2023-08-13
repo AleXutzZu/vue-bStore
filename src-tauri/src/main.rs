@@ -1,15 +1,45 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+use std::ops::DerefMut;
+use diesel::SqliteConnection;
+use tauri::State;
+use vue_bStore::{establish_connection, create_book};
+use std::sync::Mutex;
+
+struct Data {
+    client: Mutex<SqliteConnection>,
+}
+
+impl Data {
+    pub fn new() -> Data {
+        Data {
+            client: Mutex::from(establish_connection())
+        }
+    }
+}
+
+
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+#[tauri::command]
+fn add_book(data: State<Data>, title: &str, author: &str, status: &str, language: &str) {
+    let mut binding = data.client.lock().unwrap();
+    let mut connection = binding.deref_mut();
+
+    create_book(connection, title, author, status, language);
+}
+
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
+        .manage(Data::new())
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            add_book
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
