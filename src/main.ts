@@ -24,6 +24,13 @@ const routes = [
     }
 ];
 
+export interface Book {
+    title: string,
+    author: string,
+    language: string,
+    status: string,
+}
+
 const router = createRouter({ history: createWebHistory(), routes })
 
 createApp(App).use(router).mount("#app");
