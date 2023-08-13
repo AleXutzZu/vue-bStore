@@ -1,6 +1,9 @@
 import { createApp } from "vue";
 import "./styles.css";
 import App from "./App.vue";
+import Home from "./components/Home.vue"
+import Add from "./components/Add.vue"
+import Search from "./components/Search.vue"
 import {createRouter, createWebHistory} from "vue-router";
 
 const routes = [
