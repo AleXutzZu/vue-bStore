@@ -1,8 +1,8 @@
 [package]
 name = "vue-bStore"
 version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "Keep a hold of your book collection. Store books, get quotes and lookup ISBNs"
+authors = ["Alex David", "Alexandra Moroz"]
 license = ""
 repository = ""
 edition = "2021"
@@ -18,6 +18,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 diesel = { version = "2.1.0", features = ["sqlite"] }
 libsqlite3-sys = { version = "0.26.0", features = ["bundled"] }
+reqwest = "0.11.18"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
