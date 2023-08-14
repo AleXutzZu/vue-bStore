@@ -77,7 +77,7 @@ function validate() {
             <input v-model="inputTitle" placeholder="Title"/>
             <input v-model="inputAuthor" placeholder="Author"/>
             <div class="radioSelector">
-                <p>Status:</p>
+                <p style="margin-left: 5px">Status:</p>
                 <ul>
                     <li>
                         <label>
