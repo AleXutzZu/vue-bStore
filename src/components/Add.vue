@@ -1,35 +1,37 @@
 <script setup lang="ts">
-import {Ref, ref} from "vue";
+import {onMounted, onUnmounted, Ref, ref} from "vue";
 import {invoke} from "@tauri-apps/api/tauri";
 import {Book} from "../main.ts";
 import {languages} from "../language";
+import {listen, UnlistenFn} from "@tauri-apps/api/event";
 
 const inputTitle = ref("");
 const inputAuthor = ref("");
 const inputStatus: Ref<string | undefined> = ref(undefined);
 const inputLanguage = ref("");
-const quote: Ref<Quote>= ref({})
+const quote: Ref<Quote | null> = ref(null)
 const loadedQuote = ref(true);
 const message = ref("");
 const showMessage = ref(false);
 const isError = ref(false);
 
-getQuote();
+let unlisten: UnlistenFn;
+
+onMounted(async () => {
+    unlisten = await listen("update_quote", event => {
+        quote.value = event.payload as Quote;
+        loadedQuote.value = false;
+    })
+})
+
+onUnmounted(() => {
+    unlisten && unlisten();
+})
 
 
-interface Quote{
+interface Quote {
     quote: string;
     author: string;
-}
-
-
-function getQuote() {
-    fetch('https://dummyjson.com/quotes/random')
-        .then(res => res.json()).then(res => {
-        quote.value = res;
-        loadedQuote.value = false;
-    });
-
 }
 
 
@@ -107,12 +109,12 @@ function validate() {
             </div>
         </div>
         <div class="quote">
-            <img src="src/assets/post-note.png" alt="">
+            <img src="/src/assets/post-note.png" alt="">
             <div style="z-index: 2; position: absolute; width: 30vw; text-align: center">
                 <h2 v-if="loadedQuote">Loading...</h2>
-                <div v-else>
+                <div v-else-if="quote!=null">
                     <h2>
-                        "{{quote.quote}}"
+                        "{{ quote.quote }}"
                     </h2>
                     <h3>
                         - {{ quote.author }}
