@@ -8,10 +8,19 @@ const inputTitle = ref("");
 const inputAuthor = ref("");
 const inputStatus: Ref<string | undefined> = ref(undefined);
 const inputLanguage = ref("");
+const quote=ref({})
 
 const message = ref("");
 const showMessage = ref(false);
 const isError = ref(false);
+
+getQuote();
+
+function getQuote(){
+   fetch('https://dummyjson.com/quotes/1')
+        .then(res => res.json()).then(res => quote.value=res);
+}
+
 
 async function submitBook() {
     if (!validate()) {
@@ -52,8 +61,8 @@ function validate() {
     <div class="addPage">
         <div class="form">
             <h1>Add a new book</h1>
-            <input id="greet-input" v-model="inputTitle" placeholder="Title"/>
-            <input id="greet-input" v-model="inputAuthor" placeholder="Author"/>
+            <input  v-model="inputTitle" placeholder="Title"/>
+            <input  v-model="inputAuthor" placeholder="Author"/>
             <p>Status:
                 <label>
                     <input type="radio" value="owned" v-model="inputStatus"/>Owned
@@ -67,17 +76,19 @@ function validate() {
             </p>
             <select v-model="inputLanguage">
                 <option value="" disabled selected hidden>Select Language</option>
-                <option v-for="(key, value)  in languages" value={{value}}>{{ key }} ({{ value }})</option>
+                <option v-for="(key, value)  in languages" value={value}>{{ key }} ({{ value }})</option>
             </select>
-            <button type="submit" @click="submitBook">Add Book</button>
-            <div v-if="showMessage" :class="{error: isError, success: !isError}">{{ message }}</div>
+            <div class="">
+                <button type="submit" @click="submitBook">Add Book</button>
+                <div v-if="showMessage" :class="{error: isError, success: !isError}">{{ message }}</div>
+            </div>
         </div>
         <div class="quote">
             <h2>
-                " QUOTE "
+                {{quote["quote"]}}
             </h2>
             <h3>
-                - AUTHOR
+                -{{quote["author"]}}
             </h3>
         </div>
     </div>
@@ -90,6 +101,10 @@ function validate() {
 
 }
 
+option{
+
+}
+
 .form {
     display: flex;
     justify-content: space-around;
@@ -99,10 +114,6 @@ function validate() {
     width: 50vw;
 }
 
-input, button, select {
-    width: fit-content;
-    margin: 10px 0;
-}
 
 .quote {
     display: flex;
