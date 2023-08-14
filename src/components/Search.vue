@@ -16,6 +16,7 @@ const searchedTerm =ref("");
 
 <style scoped>
 .container{
-    align-items: center;
+    align-items: flex-start;
+    margin: 40px;
 }
 </style>
