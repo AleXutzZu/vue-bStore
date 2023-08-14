@@ -18,6 +18,8 @@ const isError = ref(false);
 let unlisten: UnlistenFn;
 
 onMounted(async () => {
+    quote.value=await invoke("get_initial_quote" ) as Quote;
+    loadedQuote.value = false;
     unlisten = await listen("update_quote", event => {
         quote.value = event.payload as Quote;
         loadedQuote.value = false;

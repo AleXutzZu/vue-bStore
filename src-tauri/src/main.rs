@@ -33,6 +33,16 @@ struct Quote {
     quote: String,
 }
 
+#[tauri::command]
+async fn get_initial_quote() -> Quote {
+    let body = reqwest::get("https://dummyjson.com/quotes/random").await.expect("Error whilst sending event")
+        .text()
+        .await.expect("Error whilst sending event");
+
+    let payload: Quote = serde_json::from_str(body.as_str()).expect("Error whilst fetching quote");
+    return payload;
+}
+
 
 #[tauri::command]
 fn init_quote_generation(window: tauri::Window) {
@@ -53,6 +63,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             add_book,
             init_quote_generation,
+            get_initial_quote
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
