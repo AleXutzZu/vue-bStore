@@ -27,8 +27,8 @@ function selectLanguage(text: String){
 </script>
 
 <template>
-  <div>
-    <div class="row">
+  <div class="addPage">
+    <div class="form">
         <h1>Add a new book</h1>
         <input id="greet-input" v-model="inputTitle" placeholder="Title"/>
         <input id="greet-input" v-model="inputAuthor" placeholder="Author"/>
@@ -49,11 +49,24 @@ function selectLanguage(text: String){
       </select>
         <button type="submit" @click="submitBook">Add Book</button>
     </div>
+    <div class="quote">
+      <h2>
+        " QUOTE "
+      </h2>
+      <h3>
+        - AUTHOR
+      </h3>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.row {
+.addPage{
+  display: flex;
+  flex-direction: row;
+
+}
+.form {
     display: flex;
     justify-content: space-around;
     flex-direction: column;
@@ -64,6 +77,12 @@ function selectLanguage(text: String){
 
 input, button, select {
     width: fit-content;
-    margin: 20px 0;
+    margin: 10px 0;
+}
+
+.quote{
+  display: flex;
+  flex-direction: column;
+  width: available;
 }
 </style>

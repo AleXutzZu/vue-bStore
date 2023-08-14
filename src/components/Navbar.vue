@@ -23,5 +23,6 @@
   display: flex;
   justify-content: space-around;
   font-size: larger;
+  margin: 0;
 }
 </style>
