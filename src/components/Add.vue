@@ -14,14 +14,35 @@ const loadedQuote = ref(true);
 const message = ref("");
 const showMessage = ref(false);
 const isError = ref(false);
+const percentageMedium =ref(false);
+const percentageSmall =ref(false);
 
 let unlisten: UnlistenFn;
 
+function modifyFont(){
+    let len=quote.value?.quote.length;
+    if(len>130){
+        percentageMedium.value = true;
+        percentageSmall.value=false;
+    }
+    else if (len>230){
+        percentageMedium.value = false;
+        percentageSmall.value=true;
+    }
+    else {
+        percentageMedium.value = false;
+        percentageSmall.value=false;
+    }
+    console.log(len);
+}
+
 onMounted(async () => {
     quote.value=await invoke("get_initial_quote" ) as Quote;
+    modifyFont();
     loadedQuote.value = false;
     unlisten = await listen("update_quote", event => {
         quote.value = event.payload as Quote;
+        modifyFont();
         loadedQuote.value = false;
     })
 })
@@ -113,8 +134,8 @@ function validate() {
         <div class="quote">
             <img src="/src/assets/post-note.png" alt="">
             <div style="z-index: 2; position: absolute; width: 30vw; text-align: center">
-                <h2 v-if="loadedQuote">Loading...</h2>
-                <div v-else-if="quote!=null">
+                <h2 v-if="loadedQuote" >Loading...</h2>
+                <div :class="{ h2medium : percentageMedium, h2small: percentageSmall}" v-else-if="quote!=null">
                     <h2>
                         "{{ quote.quote }}"
                     </h2>
@@ -160,6 +181,19 @@ img {
     width: 45vw;
 }
 
+h2{
+    font-size: 100%;
+}
+
+.h2medium{
+    font-size: 70% !important;
+}
+
+.h2small{
+    font-size: 60% !important;
+}
+
+
 .radioSelector{
     display: flex;
     flex-direction: row;
@@ -180,6 +214,7 @@ li{
     justify-content: center;
     align-items: center;
     width: 35vw;
+    font-size: larger;
 }
 
 .errorMessage {
@@ -188,7 +223,6 @@ li{
 }
 
 .error {
-
     color: lightpink;
 }
 
