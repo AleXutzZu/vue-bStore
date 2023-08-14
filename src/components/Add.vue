@@ -24,7 +24,7 @@ interface Quote{
 
 
 function getQuote() {
-    fetch('https://dummyjson.com/quotes/1')
+    fetch('https://dummyjson.com/quotes/random')
         .then(res => res.json()).then(res => {
         quote.value = res;
         loadedQuote.value = false;
@@ -74,24 +74,35 @@ function validate() {
             <h1>Add a new book</h1>
             <input v-model="inputTitle" placeholder="Title"/>
             <input v-model="inputAuthor" placeholder="Author"/>
-            <p>Status:
-                <label>
-                    <input type="radio" value="owned" v-model="inputStatus"/>Owned
-                </label>
-                <label>
-                    <input type="radio" value="digital" v-model="inputStatus"/>Digital
-                </label>
-                <label>
-                    <input type="radio" value="library" v-model="inputStatus"/>Library
-                </label>
-            </p>
+            <div class="radioSelector">
+                <p>Status:</p>
+                <ul>
+                    <li>
+                        <label>
+                            <input type="radio" value="owned" v-model="inputStatus"/> Owned
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type="radio" value="digital" v-model="inputStatus"/> Digital
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type="radio" value="library" v-model="inputStatus"/> Library
+                        </label>
+                    </li>
+
+                </ul>
+            </div>
+
             <select v-model="inputLanguage">
-                <option value="" disabled selected hidden>Select Language</option>
+                <option value="" disabled selected hidden>Select language</option>
                 <option v-for="(key, value)  in languages" :value="value">{{ key }} ({{ value }})</option>
             </select>
             <div class="submitArea">
                 <p v-if="showMessage" :class="[{error: isError, success: !isError}, 'errorMessage']">{{ message }}</p>
-                <button type="submit" @click="submitBook">Add Book</button>
+                <button type="submit" @click="submitBook">Add book</button>
 
             </div>
         </div>
@@ -104,7 +115,7 @@ function validate() {
                         "{{quote.quote}}"
                     </h2>
                     <h3>
-                        -{{ quote.author }}
+                        - {{ quote.author }}
                     </h3>
                 </div>
             </div>
@@ -113,6 +124,9 @@ function validate() {
 </template>
 
 <style scoped>
+input[type=radio]{
+    accent-color: #3c5a64;
+}
 img {
     width: 300px;
     z-index: 1;
@@ -126,14 +140,11 @@ img {
 }
 
 .submitArea {
-    width: 100%;
+    width: 90%;
     display: flex;
     flex-direction: row;
     justify-content: end;
-    align-items: end;
-}
-
-option {
+    align-items: center;
 
 }
 
@@ -142,7 +153,20 @@ option {
     flex-direction: column;
     align-items: flex-start;
     margin: 40px;
-    width: 50vw;
+    width: 45vw;
+}
+
+.radioSelector{
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+}
+
+li{
+    list-style-type: none;
+    flex-direction: row;
+    display: flex;
+    justify-content: start;
 }
 
 
@@ -156,6 +180,7 @@ option {
 
 .errorMessage {
     width: 25vw;
+    margin: 0 7px;
 }
 
 .error {
