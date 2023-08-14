@@ -4,8 +4,8 @@
 
 <template>
   <div class="navbarContainer">
-  <RouterLink to="/">Home</RouterLink>
   <RouterLink to="/add">Add</RouterLink>
+    <RouterLink to="/">Home</RouterLink>
   <RouterLink to="/search">Search</RouterLink>
   </div>
 </template>

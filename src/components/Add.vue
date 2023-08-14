@@ -2,6 +2,7 @@
 import {ref} from "vue";
 import {invoke} from "@tauri-apps/api/tauri";
 import {Book} from "../main.ts";
+import {languages} from "../language";
 
 const inputTitle = ref("");
 const inputAuthor = ref("");
@@ -18,45 +19,51 @@ async function submitBook() {
 
     await invoke("add_book", {...book});
 }
+
+function selectLanguage(text: String){
+  inputLanguage.value=text;
+}
+
 </script>
 
 <template>
+  <div>
     <div class="row">
+        <h1>Add a new book</h1>
         <input id="greet-input" v-model="inputTitle" placeholder="Title"/>
         <input id="greet-input" v-model="inputAuthor" placeholder="Author"/>
         <p>Status:
-            <label>Owned
-                <input type="radio" value="owned" v-model="inputStatus"/>
-            </label>Digital
             <label>
-                <input type="radio" value="digital" v-model="inputStatus"/>
+                <input type="radio" value="owned" v-model="inputStatus"/>Owned
             </label>
-            <label>Library
-                <input type="radio" value="library" v-model="inputStatus"/>
+            <label>
+                <input type="radio" value="digital" v-model="inputStatus"/>Digital
             </label>
-        </p>
-        <p>Language:
-            <label>en
-                <input type="radio" value="en" v-model="inputLanguage"/>
-            </label>
-            <label>ro
-                <input type="radio" value="ro" v-model="inputLanguage"/>
+            <label>
+                <input type="radio" value="library" v-model="inputStatus"/>Library
             </label>
         </p>
-
+        <select v-model="inputLanguage" >
+          <option value="" disabled selected hidden>Select Language</option>
+          <option v-for="(key, value)  in languages" value={{value}} >{{key}} ({{value}})</option>
+      </select>
         <button type="submit" @click="submitBook">Add Book</button>
     </div>
+  </div>
 </template>
 
 <style scoped>
 .row {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    margin: 40px;
+    width: 50vw;
 }
 
-input, button {
+input, button, select {
     width: fit-content;
+    margin: 20px 0;
 }
 </style>
