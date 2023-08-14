@@ -28,7 +28,7 @@ export interface Book {
     title: string,
     author: string,
     language: string,
-    status: string,
+    status?: string,
 }
 
 const router = createRouter({ history: createWebHistory(), routes })
