@@ -16,6 +16,6 @@ pub struct Book {
 pub struct NewBook<'a> {
     pub title: &'a str,
     pub author: &'a str,
-    pub status: &'a str,
+    pub status: Option<&'a str>,
     pub language: &'a str,
 }

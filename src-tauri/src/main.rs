@@ -18,16 +18,10 @@ impl Data {
     }
 }
 
-
 #[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
-#[tauri::command]
-fn add_book(data: State<Data>, title: &str, author: &str, status: &str, language: &str) {
+fn add_book(data: State<Data>, title: &str, author: &str, status: Option<&str>, language: &str) {
     let mut binding = data.client.lock().unwrap();
-    let mut connection = binding.deref_mut();
+    let connection = binding.deref_mut();
 
     create_book(connection, title, author, status, language);
 }
@@ -37,7 +31,6 @@ fn main() {
     tauri::Builder::default()
         .manage(Data::new())
         .invoke_handler(tauri::generate_handler![
-            greet,
             add_book
         ])
         .run(tauri::generate_context!())

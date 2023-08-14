@@ -76,7 +76,7 @@ function validate() {
             </p>
             <select v-model="inputLanguage">
                 <option value="" disabled selected hidden>Select Language</option>
-                <option v-for="(key, value)  in languages" value={value}>{{ key }} ({{ value }})</option>
+                <option v-for="(key, value)  in languages" :value="value">{{ key }} ({{ value }})</option>
             </select>
             <div class="">
                 <button type="submit" @click="submitBook">Add Book</button>
