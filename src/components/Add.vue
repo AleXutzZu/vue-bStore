@@ -8,17 +8,28 @@ const inputTitle = ref("");
 const inputAuthor = ref("");
 const inputStatus: Ref<string | undefined> = ref(undefined);
 const inputLanguage = ref("");
-const quote=ref({})
-
+const quote: Ref<Quote>= ref({})
+const loadedQuote = ref(true);
 const message = ref("");
 const showMessage = ref(false);
 const isError = ref(false);
 
 getQuote();
 
-function getQuote(){
-   fetch('https://dummyjson.com/quotes/1')
-        .then(res => res.json()).then(res => quote.value=res);
+
+interface Quote{
+    quote: string;
+    author: string;
+}
+
+
+function getQuote() {
+    fetch('https://dummyjson.com/quotes/1')
+        .then(res => res.json()).then(res => {
+        quote.value = res;
+        loadedQuote.value = false;
+    });
+
 }
 
 
@@ -61,8 +72,8 @@ function validate() {
     <div class="addPage">
         <div class="form">
             <h1>Add a new book</h1>
-            <input  v-model="inputTitle" placeholder="Title"/>
-            <input  v-model="inputAuthor" placeholder="Author"/>
+            <input v-model="inputTitle" placeholder="Title"/>
+            <input v-model="inputAuthor" placeholder="Author"/>
             <p>Status:
                 <label>
                     <input type="radio" value="owned" v-model="inputStatus"/>Owned
@@ -78,36 +89,56 @@ function validate() {
                 <option value="" disabled selected hidden>Select Language</option>
                 <option v-for="(key, value)  in languages" :value="value">{{ key }} ({{ value }})</option>
             </select>
-            <div class="">
+            <div class="submitArea">
+                <p v-if="showMessage" :class="[{error: isError, success: !isError}, 'errorMessage']">{{ message }}</p>
                 <button type="submit" @click="submitBook">Add Book</button>
-                <div v-if="showMessage" :class="{error: isError, success: !isError}">{{ message }}</div>
+
             </div>
         </div>
         <div class="quote">
-            <h2>
-                {{quote["quote"]}}
-            </h2>
-            <h3>
-                -{{quote["author"]}}
-            </h3>
+            <img src="src/assets/post-note.png" alt="">
+            <div style="z-index: 2; position: absolute; width: 30vw; text-align: center">
+                <h2 v-if="loadedQuote">Loading...</h2>
+                <div v-else>
+                    <h2>
+                        "{{quote.quote}}"
+                    </h2>
+                    <h3>
+                        -{{ quote.author }}
+                    </h3>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+img {
+    width: 300px;
+    z-index: 1;
+    position: absolute;
+}
+
 .addPage {
     display: flex;
     flex-direction: row;
-
+    justify-content: start;
 }
 
-option{
+.submitArea {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: end;
+}
+
+option {
 
 }
 
 .form {
     display: flex;
-    justify-content: space-around;
     flex-direction: column;
     align-items: flex-start;
     margin: 40px;
@@ -118,12 +149,21 @@ option{
 .quote {
     display: flex;
     flex-direction: column;
-    width: available;
+    justify-content: center;
+    align-items: center;
+    width: 35vw;
+}
+
+.errorMessage {
+    width: 25vw;
 }
 
 .error {
+
+    color: lightpink;
 }
 
 .success {
+    color: #249b73;
 }
 </style>
