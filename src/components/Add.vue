@@ -14,33 +14,33 @@ const loadedQuote = ref(true);
 const message = ref("");
 const showMessage = ref(false);
 const isError = ref(false);
-const percentageMedium =ref(false);
-const percentageSmall =ref(false);
+const percentageMedium = ref(false);
+const percentageSmall = ref(false);
 
-let unlisten: UnlistenFn;
+let unsubscribe: UnlistenFn;
 
-function modifyFont(){
-    let len=quote.value?.quote.length;
-    if(len>130){
+function modifyFont() {
+    if (!quote.value) return;
+
+    let len = quote.value.quote.length;
+    if (len > 230) {
+        percentageMedium.value = false;
+        percentageSmall.value = true;
+    } else if (len > 130) {
         percentageMedium.value = true;
-        percentageSmall.value=false;
-    }
-    else if (len>230){
+        percentageSmall.value = false;
+    } else {
         percentageMedium.value = false;
-        percentageSmall.value=true;
-    }
-    else {
-        percentageMedium.value = false;
-        percentageSmall.value=false;
+        percentageSmall.value = false;
     }
     console.log(len);
 }
 
 onMounted(async () => {
-    quote.value=await invoke("get_initial_quote" ) as Quote;
+    quote.value = await invoke("get_initial_quote") as Quote;
     modifyFont();
     loadedQuote.value = false;
-    unlisten = await listen("update_quote", event => {
+    unsubscribe = await listen("update_quote", event => {
         quote.value = event.payload as Quote;
         modifyFont();
         loadedQuote.value = false;
@@ -48,7 +48,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-    unlisten && unlisten();
+    unsubscribe && unsubscribe();
 })
 
 
@@ -134,7 +134,7 @@ function validate() {
         <div class="quote">
             <img src="/src/assets/post-note.png" alt="">
             <div style="z-index: 2; position: absolute; width: 30vw; text-align: center">
-                <h2 v-if="loadedQuote" >Loading...</h2>
+                <h2 v-if="loadedQuote">Loading...</h2>
                 <div :class="{ h2medium : percentageMedium, h2small: percentageSmall}" v-else-if="quote!=null">
                     <h2>
                         "{{ quote.quote }}"
@@ -143,15 +143,19 @@ function validate() {
                         - {{ quote.author }}
                     </h3>
                 </div>
+                <div v-else>
+                    Error displaying quote
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-input[type=radio]{
+input[type=radio] {
     accent-color: #3c5a64;
 }
+
 img {
     width: 300px;
     z-index: 1;
@@ -181,26 +185,26 @@ img {
     width: 45vw;
 }
 
-h2{
+h2 {
     font-size: 100%;
 }
 
-.h2medium{
+.h2medium {
     font-size: 70% !important;
 }
 
-.h2small{
+.h2small {
     font-size: 60% !important;
 }
 
 
-.radioSelector{
+.radioSelector {
     display: flex;
     flex-direction: row;
     justify-content: start;
 }
 
-li{
+li {
     list-style-type: none;
     flex-direction: row;
     display: flex;
