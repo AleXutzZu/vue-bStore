@@ -91,7 +91,7 @@ async function submitBook() {
 }
 
 function validate() {
-    return inputTitle.value && inputAuthor.value && inputLanguage.value;
+    return inputTitle.value && inputAuthor.value && inputLanguage.value && inputStatus.value;
 }
 
 </script>
