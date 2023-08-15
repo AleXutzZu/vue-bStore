@@ -3,7 +3,7 @@
 use std::ops::DerefMut;
 use diesel::SqliteConnection;
 use tauri::State;
-use vue_bStore::{establish_connection, create_book, SerializedResult, get_books_interval};
+use vue_bStore::{establish_connection, create_book, SerializedResult, get_books_interval, get_books_count};
 use std::sync::Mutex;
 use serde::{Deserialize, Serialize};
 use vue_bStore::models::Book;
@@ -115,6 +115,13 @@ fn load_books_interval(data: State<Data>, limit: i64, offset: i64) -> Serialized
     return get_books_interval(connection, limit, offset);
 }
 
+#[tauri::command]
+fn book_count(data: State<Data>) -> SerializedResult<i64> {
+    let mut binding = data.client.lock().unwrap();
+    let connection = binding.deref_mut();
+    get_books_count(connection)
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(Data::new())
@@ -123,6 +130,7 @@ fn main() {
             init_quote_generation,
             get_initial_quote,
             load_books_interval,
+            book_count,
             search_book
         ])
         .run(tauri::generate_context!())
