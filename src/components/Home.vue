@@ -104,6 +104,10 @@ async function reset(){
     await updateBooks();
 }
 
+async function removeBook(id: number){
+    await invoke("remove_book", {id:id});
+}
+
 </script>
 
 <template>
@@ -146,6 +150,7 @@ async function reset(){
                     <th>Author</th>
                     <th>Status</th>
                     <th>Language</th>
+                    <th>Delete</th>
                 </tr>
                 <tr v-for="(book, index) in books">
                     <td>{{ index + offset + 1 }}</td>
@@ -153,6 +158,7 @@ async function reset(){
                     <td>{{ book.author }}</td>
                     <td>{{ book.status }}</td>
                     <td>{{ book.language }}</td>
+                    <td><button class="x" @click="removeBook(book.id)">X</button></td>
                 </tr>
             </table>
             <br>
@@ -162,6 +168,15 @@ async function reset(){
 </template>
 
 <style scoped>
+.x{
+    padding: 0.3em 0.6em;
+    color:#e8e8e8;
+}
+.x:active {
+    border-color: #182940;
+    color: #182940;
+    background-color: #e8e8e8;
+}
 img {
     width: 15px;
     filter: invert(100%) sepia(9%) saturate(0%) hue-rotate(33deg) brightness(109%) contrast(101%);
