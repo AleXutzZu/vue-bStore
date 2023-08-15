@@ -37,16 +37,16 @@ struct Quote {
 #[derive(Serialize, Deserialize)]
 struct ISBNBook {
     title: String,
-    authors: String[],
+    authors: Vec<(String, String)>,
 }
 
 #[tauri::command]
-async fn search_book(isbn: String) -> ISBNBook {
+async fn search_book(isbn: String) -> SerializedResult<ISBNBook> {
     let response = reqwest::get(
-        format!("https://openlibrary.org/isbn/{}.json", isbn
-        )).await.unwrap().text().await.unwrap();
-    let json: ISBNBook = serde_json::from_str(response.as_str()).unwrap();
-    return json;
+        format!("https://openlibrary.org/api/books?bibkeys=ISBN:{}&format=json&jscmd=data", isbn
+        )).await?.text().await?;
+    let json: ISBNBook = serde_json::from_str(response.as_str())?;
+    Ok(json)
 }
 
 #[tauri::command]
