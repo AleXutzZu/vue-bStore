@@ -35,15 +35,20 @@ struct Quote {
 }
 
 #[derive(Serialize, Deserialize)]
+struct Author {
+    key: String
+}
+
+#[derive(Serialize, Deserialize)]
 struct ISBNBook {
     title: String,
-    authors: Vec<(String, String)>,
+    authors: Vec<Author>,
 }
 
 #[tauri::command]
 async fn search_book(isbn: String) -> SerializedResult<ISBNBook> {
     let response = reqwest::get(
-        format!("https://openlibrary.org/api/books?bibkeys=ISBN:{}&format=json&jscmd=data", isbn
+        format!("https://openlibrary.org/isbn/{}.json", isbn
         )).await?.text().await?;
     let json: ISBNBook = serde_json::from_str(response.as_str())?;
     Ok(json)
