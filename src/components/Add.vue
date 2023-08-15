@@ -47,7 +47,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-    unsubscribe && unsubscribe();
+    unsubscribe();
 })
 
 
