@@ -16,7 +16,7 @@ async function searchBook(){
 
 const books = [
     {
-        title: "Amintiri din copilarie",
+        title: "Amfdsasdf ghjhgfdsas dfgbhgfdsdfgb gfdsdfg fdintiri din copilarie",
         author: "Ion Luca Caragiale",
         status: "owned",
         language: "ro",

@@ -34,6 +34,21 @@ struct Quote {
     quote: String,
 }
 
+#[derive(Serialize, Deserialize)]
+struct ISBNBook {
+    title: String,
+    authors: String[],
+}
+
+#[tauri::command]
+async fn search_book(isbn: String) -> ISBNBook {
+    let response = reqwest::get(
+        format!("https://openlibrary.org/isbn/{}.json", isbn
+        )).await.unwrap().text().await.unwrap();
+    let json: ISBNBook = serde_json::from_str(response.as_str()).unwrap();
+    return json;
+}
+
 #[tauri::command]
 async fn get_initial_quote() -> Quote {
     let response = reqwest::get("https://dummyjson.com/quotes/random").await.ok();
@@ -107,7 +122,8 @@ fn main() {
             add_book,
             init_quote_generation,
             get_initial_quote,
-            load_books_interval
+            load_books_interval,
+            search_book
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
