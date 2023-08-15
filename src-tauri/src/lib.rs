@@ -32,6 +32,11 @@ pub fn get_books_interval(connection: &mut SqliteConnection, limit: i64, offset:
     Ok(result)
 }
 
+pub fn get_books_count(connection: &mut SqliteConnection) -> SerializedResult<i64> {
+    let count = books::table.count().get_result(connection)?;
+    Ok(count)
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error(transparent)]
