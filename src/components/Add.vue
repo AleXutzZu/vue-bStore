@@ -165,6 +165,8 @@ img {
     display: flex;
     flex-direction: row;
     justify-content: start;
+    background-color: #182940;
+    height: 91vh;
 }
 
 .submitArea {
@@ -232,4 +234,5 @@ li {
 .success {
     color: #249b73;
 }
+
 </style>

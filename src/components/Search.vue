@@ -4,10 +4,14 @@ import {invoke} from "@tauri-apps/api/tauri";
 const searchedTerm =ref("");
 const imageLink=ref("https://covers.openlibrary.org/b/id/240726-M.jpg");
 
-
 async function searchBook(){
     let a=await invoke("search_book", {isbn:searchedTerm.value});
     console.log(a);
+}
+interface ISBNBook{
+    title:string,
+    author:{key:string}[],
+
 }
 
 </script>
@@ -17,7 +21,7 @@ async function searchBook(){
     <h1>Search book by ISBN</h1>
     <div>
     <input v-model="searchedTerm" placeholder="Enter 10 or 13 characters"/>
-    <button type="submit" @click="">Search</button>
+    <button type="submit" @click="searchBook()">Search</button>
     </div>
     <div class="book">
         <div>
@@ -47,7 +51,7 @@ h3{
     align-items: flex-start;
     margin: 40px;
     width: 80%;
-    height: fit-content !important;
+    min-height: 78vh;
 }
 button{
     margin: 0 5px;
@@ -55,7 +59,9 @@ button{
 .book{
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
+    height: fit-content;
+    width: 650px;
 }
 </style>

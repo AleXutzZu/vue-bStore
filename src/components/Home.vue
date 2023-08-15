@@ -187,4 +187,8 @@ p {
 .customers tr:hover {
     background-color: #ddd;
 }
+
+.container{
+    min-height: 100vh;
+}
 </style>
