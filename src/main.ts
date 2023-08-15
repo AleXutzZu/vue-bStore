@@ -32,6 +32,8 @@ export interface Book {
     status?: string,
 }
 
-const router = createRouter({ history: createWebHistory(), routes })
+const router = createRouter({
+    history: createWebHistory(),
+    routes})
 
 createApp(App).use(router).mount("#app");
