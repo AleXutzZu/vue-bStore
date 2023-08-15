@@ -1,10 +1,32 @@
 <script setup lang="ts">
-import {Ref, ref} from "vue";
+import {computed, Ref, ref} from "vue";
 import {invoke} from "@tauri-apps/api/tauri";
-const searchedTerm =ref("");
-const Authors=ref([""])
-const imageLink=ref("");
-const ISBNBook:Ref<ISBNBook | null>=ref(null);
+import {fetch} from "@tauri-apps/api/http";
+
+const searchedTerm = ref("");
+const authors: Ref<string[]> = ref([])
+const imageLink = ref("");
+const ISBNBook: Ref<ISBNBook> = ref();
+
+const authorsFormatted = computed<string>(() => {
+    if (authors.value.length === 0) return "Loading...";
+
+    let formatted: string = "";
+    for (let i = 0; i < authors.value.length; ++i) {
+        formatted = formatted + " " + authors.value[i];
+        if (i + 1 < authors.value.length) formatted = formatted + ",";
+    }
+    return formatted;
+});
+
+const publishersFormatted = computed<string>(() => {
+    let formatted: string = "";
+    for (let i = 0; i < ISBNBook.value.publishers.length; ++i) {
+        formatted = formatted + " " + ISBNBook.value.publishers[i];
+        if (i + 1 < ISBNBook.value.publishers.length) formatted = formatted + ",";
+    }
+    return formatted;
+})
 
 function imageNotFound() {
     alert('That image was not found.');
@@ -14,111 +36,106 @@ function imageFound() {
     alert('That image is found and loaded');
 }
 
-async function getAuthors(){
-    Authors.value=[];
-    let Fetches=[], JsonFetches=[];
-    for (let i = 0; i < ISBNBook.value?.publishers.length; i++)
-    {
-        Fetches.push("https://openlibrary.org/"+ISBNBook.value?.authors[i].key);
-    }
-    Fetches=await Promise.all(Fetches);
-    for (let i = 0; i < Fetches.length; i++)
-    {
-        JsonFetches.push(Fetches[i]);
-    }
-    Authors.value=await Promise.all(JsonFetches);
-}
-async function getCover(){
-    let found =false;
-    for(let i=0; i<ISBNBook.value?.covers.length; i++){
-        var tester=new Image();
+async function getCover() {
+    let found = false;
+    for (let i = 0; i < ISBNBook.value?.covers.length; i++) {
+        var tester = new Image();
 
-        tester.src="https://covers.openlibrary.org/b/id/"+ISBNBook.value?.covers[i]+"-L.jpg";
-        tester.onload = function() {
-            found=true;
+        tester.src = "https://covers.openlibrary.org/b/id/" + ISBNBook.value?.covers[i] + "-L.jpg";
+        tester.onload = function () {
+            found = true;
         }
-        if(found){
-            imageLink.value=tester.src;
+        if (found) {
+            imageLink.value = tester.src;
             return;
         }
-        tester.src="https://covers.openlibrary.org/b/id/"+ISBNBook.value?.covers[i]+"-M.jpg";
-        tester.onload = function() {
-            found=true;
+        tester.src = "https://covers.openlibrary.org/b/id/" + ISBNBook.value?.covers[i] + "-M.jpg";
+        tester.onload = function () {
+            found = true;
         }
-        if(found){
-            imageLink.value=tester.src;
+        if (found) {
+            imageLink.value = tester.src;
             return;
         }
-        tester.src="https://covers.openlibrary.org/b/id/"+ISBNBook.value?.covers[i]+"-S.jpg";
-        tester.onload = function() {
-            found=true;
+        tester.src = "https://covers.openlibrary.org/b/id/" + ISBNBook.value?.covers[i] + "-S.jpg";
+        tester.onload = function () {
+            found = true;
         }
-        if(found){
-            imageLink.value=tester.src;
+        if (found) {
+            imageLink.value = tester.src;
             return;
         }
 
     }
 }
 
-async function searchBook(){
-    ISBNBook.value=await invoke("search_book", {isbn:searchedTerm.value});
-    getAuthors();
-    getCover();
+async function searchBook() {
+    try {
+        ISBNBook.value = await invoke("search_book", {isbn: searchedTerm.value}) as ISBNBook;
+        const responses = await Promise.all(ISBNBook.value?.authors.map(author => fetch(`https://openlibrary.org/${author.key}.json`)));
+        authors.value = responses.map(resp => resp.data.name);
+    } catch (error) {
+        console.log(error);
+    }
+    // getCover();
 }
-interface ISBNBook{
-    title:string,
-    authors: { key:string }[],
+
+interface ISBNBook {
+    title: string,
+    authors: { key: string }[],
     publishers: string[],
     publish_date: string,
     number_of_pages: number,
-    covers:number[]
+    covers: number[]
 }
 
 
 </script>
 
 <template>
-<div class="container">
-    <h1>Search book by ISBN</h1>
-    <div>
-    <input v-model="searchedTerm" placeholder="Enter 10 or 13 characters"/>
-    <button type="submit" @click="searchBook()" class="specialButton">Search</button>
-    </div>
-    <div v-if="ISBNBook" class="book">
+    <div class="container">
+        <h1>Search book by ISBN</h1>
         <div>
-            <h3>Title: {{ISBNBook.title}}</h3>
-            <h3>Author: {{Authors}}</h3>
-            <h3>Number of pages: {{ISBNBook.number_of_pages}}</h3>
-            <h3>Publish date: {{ISBNBook.publish_date}}</h3>
-            <h3>Publisher: {{ISBNBook.publishers}}</h3>
+            <input v-model="searchedTerm" placeholder="Enter 10 or 13 characters"/>
+            <button type="submit" @click="searchBook()" class="specialButton">Search</button>
         </div>
-        <div>
-            <img :src="imageLink" alt="">
+        <div v-if="ISBNBook" class="book">
+            <div>
+                <h3>Title: {{ ISBNBook.title }}</h3>
+                <h3>Author(s): {{ authorsFormatted }}</h3>
+                <h3>Number of pages: {{ ISBNBook.number_of_pages }}</h3>
+                <h3>Publish date: {{ ISBNBook.publish_date }}</h3>
+                <h3>Publisher(s): {{ publishersFormatted }}</h3>
+            </div>
+            <div>
+                <img :src="imageLink" alt="">
+            </div>
         </div>
-    </div>
 
-</div>
+    </div>
 </template>
 
 <style scoped>
-img{
+img {
     width: 200px;
 }
 
-h3{
+h3 {
     text-align: start;
 }
-.container{
+
+.container {
     align-items: flex-start;
     margin: 40px;
     width: 80%;
     min-height: 78vh;
 }
-button{
+
+button {
     margin: 0 5px;
 }
-.book{
+
+.book {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
