@@ -8,6 +8,9 @@ const authors: Ref<string[]> = ref([])
 const imageLink = ref("");
 const ISBNBook: Ref<ISBNBook> = ref();
 const loaded = ref(true);
+const errorMessage = ref("");
+const showError = ref(false);
+
 
 const authorsFormatted = computed<string>(() => {
     if (authors.value.length === 0) return "Loading...";
@@ -39,6 +42,9 @@ async function searchBook() {
         authors.value = responses.map(resp => resp.data.name);
     } catch (error) {
         console.log(error);
+        errorMessage.value = "Could not find any books with that ISBN.";
+        showError.value = true;
+        loaded.value=true;
     }
     imageLink.value = `https://covers.openlibrary.org/b/id/${ISBNBook.value.covers[0]}-M.jpg`;
 }
