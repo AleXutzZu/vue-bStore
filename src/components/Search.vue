@@ -1,18 +1,80 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {Ref, ref} from "vue";
 import {invoke} from "@tauri-apps/api/tauri";
 const searchedTerm =ref("");
-const imageLink=ref("https://covers.openlibrary.org/b/id/240726-M.jpg");
+const Authors=ref([""])
+const imageLink=ref("");
+const ISBNBook:Ref<ISBNBook | null>=ref(null);
+
+function imageNotFound() {
+    alert('That image was not found.');
+}
+
+function imageFound() {
+    alert('That image is found and loaded');
+}
+
+async function getAuthors(){
+    Authors.value=[];
+    let Fetches=[], JsonFetches=[];
+    for (let i = 0; i < ISBNBook.value?.publishers.length; i++)
+    {
+        Fetches.push("https://openlibrary.org/"+ISBNBook.value?.authors[i].key);
+    }
+    Fetches=await Promise.all(Fetches);
+    for (let i = 0; i < Fetches.length; i++)
+    {
+        JsonFetches.push(Fetches[i]);
+    }
+    Authors.value=await Promise.all(JsonFetches);
+}
+async function getCover(){
+    let found =false;
+    for(let i=0; i<ISBNBook.value?.covers.length; i++){
+        var tester=new Image();
+
+        tester.src="https://covers.openlibrary.org/b/id/"+ISBNBook.value?.covers[i]+"-L.jpg";
+        tester.onload = function() {
+            found=true;
+        }
+        if(found){
+            imageLink.value=tester.src;
+            return;
+        }
+        tester.src="https://covers.openlibrary.org/b/id/"+ISBNBook.value?.covers[i]+"-M.jpg";
+        tester.onload = function() {
+            found=true;
+        }
+        if(found){
+            imageLink.value=tester.src;
+            return;
+        }
+        tester.src="https://covers.openlibrary.org/b/id/"+ISBNBook.value?.covers[i]+"-S.jpg";
+        tester.onload = function() {
+            found=true;
+        }
+        if(found){
+            imageLink.value=tester.src;
+            return;
+        }
+
+    }
+}
 
 async function searchBook(){
-    let a=await invoke("search_book", {isbn:searchedTerm.value});
-    console.log(a);
+    ISBNBook.value=await invoke("search_book", {isbn:searchedTerm.value});
+    getAuthors();
+    getCover();
 }
 interface ISBNBook{
     title:string,
-    author:{key:string}[],
-
+    authors: { key:string }[],
+    publishers: string[],
+    publish_date: string,
+    number_of_pages: number,
+    covers:number[]
 }
+
 
 </script>
 
@@ -23,13 +85,13 @@ interface ISBNBook{
     <input v-model="searchedTerm" placeholder="Enter 10 or 13 characters"/>
     <button type="submit" @click="searchBook()">Search</button>
     </div>
-    <div class="book">
+    <div v-if="ISBNBook" class="book">
         <div>
-            <h3>Title: {{}}</h3>
-            <h3>Author: {{}}</h3>
-            <h3>Number of pages: {{}}</h3>
-            <h3>Publish date: {{}}</h3>
-            <h3>Publisher: {{}}</h3>
+            <h3>Title: {{ISBNBook.title}}</h3>
+            <h3>Author: {{Authors}}</h3>
+            <h3>Number of pages: {{ISBNBook.number_of_pages}}</h3>
+            <h3>Publish date: {{ISBNBook.publish_date}}</h3>
+            <h3>Publisher: {{ISBNBook.publishers}}</h3>
         </div>
         <div>
             <img :src="imageLink" alt="">
