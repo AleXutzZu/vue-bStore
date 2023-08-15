@@ -29,14 +29,6 @@
   background-color: #3ca07b; color: #182940; font-weight: bolder;
 }
 
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
-
 a {
   font-weight: 900;
   color: #182940;
@@ -45,11 +37,9 @@ a {
 
 a:hover {
   color: #0f0f0f98 !important;
-  /*filter: drop-shadow(0 0 2em #24c8db);*/
 }
 
 .active{
-
 }
 
 h1 {
@@ -72,10 +62,6 @@ button, select {
   margin: 10px 0;
 }
 
-button {
-  cursor: pointer;
-}
-
 body{
   margin: 0;
   padding: 0;
@@ -83,6 +69,7 @@ body{
 
 button:hover {
   border-color: #182940;
+  cursor: pointer;
 }
 button:active {
   border-color: #182940;

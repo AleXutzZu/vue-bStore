@@ -7,7 +7,7 @@ const recordsPerPage = 25;
 const offset = ref(0);
 const searchedTerm = ref("");
 const selectedField = ref("Title");
-const totalRecords = ref(100);
+const totalRecords = ref(0);
 const currentPage = ref(1);
 const totalPages = ref(0);
 const books: Ref<Book[] | null> = ref(null);
@@ -92,6 +92,16 @@ async function updateBooks() {
     }
 }
 
+async function reset(){
+    appliedFilter.value=false;
+    offset.value = 0;
+    currentPage.value = 1;
+    totalRecords.value = await invoke("book_count");
+    totalPages.value = Math.trunc(totalRecords.value / recordsPerPage) + (totalRecords.value % recordsPerPage == 0 ? 0 : 1);
+    await updateBooks();
+
+}
+
 </script>
 
 <template>
@@ -101,7 +111,7 @@ async function updateBooks() {
             <div class="info">
                 <input v-model="searchedTerm" placeholder="Enter search term"/>
                 <div class="info">
-                    <button type="submit" @click="searchBook()">Reset filter</button>
+                    <button type="submit" @click="reset()">Reset filter</button>
                     <p>Search by</p>
                     <select v-model="selectedField">
                         <option value="Title">Title</option>

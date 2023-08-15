@@ -7,6 +7,7 @@ const searchedTerm = ref("");
 const authors: Ref<string[]> = ref([])
 const imageLink = ref("");
 const ISBNBook: Ref<ISBNBook> = ref();
+const loaded = ref(true);
 
 const authorsFormatted = computed<string>(() => {
     if (authors.value.length === 0) return "Loading...";
@@ -70,6 +71,7 @@ async function getCover() {
 }
 
 async function searchBook() {
+    loaded.value=false;
     try {
         ISBNBook.value = await invoke("search_book", {isbn: searchedTerm.value}) as ISBNBook;
         const responses = await Promise.all(ISBNBook.value?.authors.map(author => fetch(`https://openlibrary.org/${author.key}.json`)));
@@ -77,6 +79,7 @@ async function searchBook() {
     } catch (error) {
         console.log(error);
     }
+    loaded.value=true;
     // getCover();
 }
 
@@ -111,6 +114,10 @@ interface ISBNBook {
                 <img :src="imageLink" alt="">
             </div>
         </div>
+        <div v-if="!loaded" style="display: flex; justify-content:center; flex-direction: row; width:115%">
+            <div class="lds-ring" >
+                <br><br><div></div><div></div><div></div><div></div></div>
+        </div>
 
     </div>
 </template>
@@ -142,5 +149,41 @@ button {
     align-items: center;
     height: fit-content;
     width: 650px;
+}
+
+.lds-ring {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+.lds-ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border: 8px solid #fff;
+    border-radius: 50%;
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: #fff transparent transparent transparent;;
+}
+.lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 </style>
