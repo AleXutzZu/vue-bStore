@@ -14,7 +14,7 @@ onMounted(async () => {
 <template>
     <div class="container">
         <Navbar/>
-        <br>
+
         <RouterView/>
     </div>
 </template>
