@@ -45,7 +45,7 @@ async fn get_initial_quote() -> Quote {
 
 
 #[tauri::command]
-fn init_quote_generation(window: tauri::Window) {
+fn init_quote_generation(window: tauri::Window<tauri::Wry>) {
     std::thread::spawn(move || {
         loop {
             let req_body = reqwest::blocking::get("https://dummyjson.com/quotes/random").expect("Error whilst fetching quote").text().expect("Error whilst fetching quote");
