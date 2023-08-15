@@ -47,7 +47,11 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-    unsubscribe();
+    try {
+        unsubscribe();
+    } catch (ignored) {
+
+    }
 })
 
 
