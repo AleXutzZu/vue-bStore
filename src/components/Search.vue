@@ -83,7 +83,7 @@ interface ISBNBook{
     <h1>Search book by ISBN</h1>
     <div>
     <input v-model="searchedTerm" placeholder="Enter 10 or 13 characters"/>
-    <button type="submit" @click="searchBook()">Search</button>
+    <button type="submit" @click="searchBook()" class="specialButton">Search</button>
     </div>
     <div v-if="ISBNBook" class="book">
         <div>

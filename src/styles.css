@@ -25,6 +25,10 @@
   height: fit-content;
 }
 
+.specialButton{
+  background-color: #3ca07b; color: #182940; font-weight: bolder;
+}
+
 
 .logo {
   height: 6em;
@@ -78,10 +82,11 @@ body{
 }
 
 button:hover {
-  border-color: #396cd8;
+  border-color: #182940;
 }
 button:active {
-  border-color: #396cd8;
+  border-color: #182940;
+  color: #182940;
   background-color: #e8e8e8;
 }
 

@@ -126,7 +126,7 @@ function validate() {
             </select>
             <div class="submitArea">
                 <p v-if="showMessage" :class="[{error: isError, success: !isError}, 'errorMessage']">{{ message }}</p>
-                <button type="submit" @click="submitBook">Add book</button>
+                <button type="submit" @click="submitBook" class="specialButton">Add book</button>
 
             </div>
         </div>
@@ -223,7 +223,7 @@ li {
 }
 
 .errorMessage {
-    width: 25vw;
+    width: 20vw;
     margin: 0 7px;
 }
 

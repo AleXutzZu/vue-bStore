@@ -27,7 +27,7 @@ onMounted(async () => {
     } catch (error) {
         console.log(error);
         showError.value = true;
-        errorMessage.value = "Ayaye"
+        errorMessage.value = "Could not access database. You may be offline."
     }
 })
 
@@ -48,7 +48,9 @@ async function searchBook() {
         await updateBooks();
 
     } catch (error) {
-        console.log(error)
+        //console.log(error)
+        errorMessage.value="Could not access database. You may be offline.";
+        showError.value=true;
         appliedFilter.value = false;
     }
 }
@@ -71,19 +73,23 @@ function prevPage() {
 
 async function updateBooks() {
     loaded.value = false;
-    if (appliedFilter.value) {
-        books.value = await invoke("load_books_filtered_interval", {
-            offset: offset.value,
-            limit: recordsPerPage,
-            keywords: keywords.value,
-            filter: filter.value
-        }) as Book[];
+    try{
+        if (appliedFilter.value) {
+            books.value = await invoke("load_books_filtered_interval", {
+                offset: offset.value,
+                limit: recordsPerPage,
+                keywords: keywords.value,
+                filter: filter.value
+            }) as Book[];
 
-    } else {
-        books.value = await invoke("load_books_interval", {limit: recordsPerPage, offset: offset.value}) as Book[];
+        } else {
+            books.value = await invoke("load_books_interval", {limit: recordsPerPage, offset: offset.value}) as Book[];
+        }
+        loaded.value = true;
+    }catch(error){
+        errorMessage.value="Could not access database. You may be offline.";
+        showError.value=true;
     }
-
-    loaded.value = true;
 }
 
 </script>
@@ -95,6 +101,7 @@ async function updateBooks() {
             <div class="info">
                 <input v-model="searchedTerm" placeholder="Enter search term"/>
                 <div class="info">
+                    <button type="submit" @click="searchBook()">Reset filter</button>
                     <p>Search by</p>
                     <select v-model="selectedField">
                         <option value="Title">Title</option>
@@ -102,7 +109,7 @@ async function updateBooks() {
                         <option value="Status">Status</option>
                         <option value="Language">Language</option>
                     </select>
-                    <button type="submit" @click="searchBook()">Go</button>
+                    <button type="submit" @click="searchBook()" class="specialButton" >Go</button>
                 </div>
             </div>
             <div class="info">
@@ -115,8 +122,12 @@ async function updateBooks() {
                 </div>
 
             </div>
-
-            <table class="customers">
+            <h2 v-if="showError" style="color: lightpink;">
+                {{errorMessage}}
+            </h2>
+            <div class="lds-ring" v-if="!loaded">
+                <br><br><div></div><div></div><div></div><div></div></div>
+            <table class="customers" v-else>
                 <tr>
                     <th>No</th>
                     <th>Title</th>
@@ -151,6 +162,7 @@ img:hover {
 
 }
 
+
 select {
     margin: 0 15px;
 }
@@ -160,7 +172,7 @@ option {
 }
 
 button {
-    margin: 0 5px;
+    margin: 0 15px;
 }
 
 .info {
@@ -222,4 +234,41 @@ p {
 .container{
     min-height: 100vh;
 }
+
+.lds-ring {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+.lds-ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border: 8px solid #fff;
+    border-radius: 50%;
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: #fff transparent transparent transparent;;
+}
+.lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 </style>
