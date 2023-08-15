@@ -3,7 +3,7 @@
 use std::ops::DerefMut;
 use diesel::SqliteConnection;
 use tauri::State;
-use vue_bStore::{establish_connection, create_book};
+use vue_bStore::{establish_connection, create_book, SerializedResult};
 use std::sync::Mutex;
 use serde::{Deserialize, Serialize};
 
@@ -20,11 +20,11 @@ impl Data {
 }
 
 #[tauri::command]
-fn add_book(data: State<Data>, title: &str, author: &str, status: Option<&str>, language: &str) {
+fn add_book(data: State<Data>, title: &str, author: &str, status: Option<&str>, language: &str) -> SerializedResult<()> {
     let mut binding = data.client.lock().unwrap();
     let connection = binding.deref_mut();
 
-    create_book(connection, title, author, status, language);
+    create_book(connection, title, author, status, language)
 }
 
 #[derive(Serialize, Deserialize, Clone)]
