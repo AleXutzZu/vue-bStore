@@ -88,7 +88,7 @@ pub fn get_filtered_book_count(connection: &mut SqliteConnection, keywords: Stri
     }
 }
 
-pub fn delete_book(connection: &mut SqliteConnection, id: i64) -> SerializedResult<()> {
+pub fn delete_book(connection: &mut SqliteConnection, id: i32) -> SerializedResult<()> {
     diesel::delete(books::table.filter(books::id.eq(id))).execute(connection)?;
     Ok(())
 }

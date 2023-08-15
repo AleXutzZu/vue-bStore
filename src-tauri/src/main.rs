@@ -148,7 +148,7 @@ fn filtered_book_count(data: State<Data>, filter: FilterType, keywords: String) 
 }
 
 #[tauri::command]
-fn remove_book(data: State<Data>, id: i64) -> SerializedResult<()> {
+fn remove_book(data: State<Data>, id: i32) -> SerializedResult<()> {
     let mut binding = data.client.lock().unwrap();
     let connection = binding.deref_mut();
 
