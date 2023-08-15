@@ -161,7 +161,7 @@ async function removeBook(id: number | undefined) {
             </div>
             <table class="customers" v-else>
                 <tr>
-                    <th>No</th>
+                    <th>No.</th>
                     <th>Title</th>
                     <th>Author</th>
                     <th>Status</th>

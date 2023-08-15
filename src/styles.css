@@ -29,7 +29,8 @@
   background-color: #3ca07b; color: #182940; font-weight: bolder;
 }
 
-.active{
+a.router-link-active , a.router-link-exact-active{
+  color: #0f0f0f !important;
 }
 
 h1 {
