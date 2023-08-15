@@ -29,16 +29,6 @@
   background-color: #3ca07b; color: #182940; font-weight: bolder;
 }
 
-a {
-  font-weight: 900;
-  color: #182940;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #0f0f0f98 !important;
-}
-
 .active{
 }
 

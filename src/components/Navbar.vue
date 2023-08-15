@@ -28,4 +28,17 @@
 img{
     width: 28px;
 }
+a {
+    font-weight: 900;
+    color: #182940;
+    text-decoration: inherit;
+}
+
+a:hover {
+    color: 	#0f0f0f!important;
+}
+
+a:active{
+    color: 	#0f0f0f!important;
+}
 </style>

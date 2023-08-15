@@ -24,6 +24,7 @@ onMounted(async () => {
         totalRecords.value = await invoke("book_count", {});
         totalPages.value = Math.trunc(totalRecords.value / recordsPerPage) + (totalRecords.value % recordsPerPage == 0 ? 0 : 1);
         await updateBooks();
+        showError.value=false;
     } catch (error) {
         console.log(error);
         showError.value = true;
@@ -46,6 +47,7 @@ async function searchBook() {
         });
         totalPages.value = Math.trunc(totalRecords.value / recordsPerPage) + (totalRecords.value % recordsPerPage == 0 ? 0 : 1);
         await updateBooks();
+        showError.value=false;
 
     } catch (error) {
         //console.log(error)
@@ -86,6 +88,7 @@ async function updateBooks() {
             books.value = await invoke("load_books_interval", {limit: recordsPerPage, offset: offset.value}) as Book[];
         }
         loaded.value = true;
+        showError.value=false;
     }catch(error){
         errorMessage.value="Could not access database. You may be offline.";
         showError.value=true;
@@ -99,7 +102,6 @@ async function reset(){
     totalRecords.value = await invoke("book_count");
     totalPages.value = Math.trunc(totalRecords.value / recordsPerPage) + (totalRecords.value % recordsPerPage == 0 ? 0 : 1);
     await updateBooks();
-
 }
 
 </script>

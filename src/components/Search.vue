@@ -40,9 +40,10 @@ async function searchBook() {
         loaded.value=true;
         const responses = await Promise.all(ISBNBook.value?.authors.map(author => fetch(`https://openlibrary.org/${author.key}.json`)));
         authors.value = responses.map(resp => resp.data.name);
+        showError.value=false;
     } catch (error) {
         console.log(error);
-        errorMessage.value = "Could not find any books with that ISBN.";
+        errorMessage.value = "Could not find any books with that ISBN. You may be offline.";
         showError.value = true;
         loaded.value=true;
     }
@@ -79,6 +80,10 @@ interface ISBNBook {
                 <img :src="imageLink" alt="">
             </div>
         </div>
+        <h2 v-if="showError">
+            <br>
+            {{errorMessage}}
+        </h2>
         <div v-if="!loaded" style="display: flex; justify-content:center; flex-direction: row; width:115%">
             <div class="lds-ring" >
                 <br><br><div></div><div></div><div></div><div></div></div>
@@ -105,6 +110,10 @@ h3 {
 
 button {
     margin: 0 5px;
+}
+h2{
+    width: 115%;
+    color: lightpink;
 }
 
 .book {
