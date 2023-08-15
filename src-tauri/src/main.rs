@@ -3,7 +3,7 @@
 use std::ops::DerefMut;
 use diesel::SqliteConnection;
 use tauri::State;
-use vue_bStore::{establish_connection, create_book, SerializedResult, get_books_interval, get_books_count};
+use vue_bStore::{establish_connection, create_book, SerializedResult, get_books_interval, get_books_count, FilterType, get_filtered_books_interval, get_filtered_book_count};
 use std::sync::Mutex;
 use serde::{Deserialize, Serialize};
 use vue_bStore::models::Book;
@@ -131,6 +131,22 @@ fn book_count(data: State<Data>) -> SerializedResult<i64> {
     get_books_count(connection)
 }
 
+#[tauri::command]
+fn load_books_filtered_interval(data: State<Data>, limit: i64, offset: i64, filter: FilterType, keywords: String) -> SerializedResult<Vec<Book>> {
+    let mut binding = data.client.lock().unwrap();
+    let connection = binding.deref_mut();
+
+    get_filtered_books_interval(connection, limit, offset, keywords, filter)
+}
+
+#[tauri::command]
+fn filtered_book_count(data: State<Data>, filter: FilterType, keywords: String) -> SerializedResult<i64> {
+    let mut binding = data.client.lock().unwrap();
+    let connection = binding.deref_mut();
+
+    get_filtered_book_count(connection, keywords, filter)
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(Data::new())
@@ -140,7 +156,9 @@ fn main() {
             get_initial_quote,
             load_books_interval,
             book_count,
-            search_book
+            search_book,
+            load_books_filtered_interval,
+            filtered_book_count
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

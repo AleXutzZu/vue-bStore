@@ -1,10 +1,12 @@
-pub mod models;
-pub mod schema;
-
-use diesel::{Connection, QueryDsl, RunQueryDsl, SelectableHelper};
+use diesel::{Connection, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, TextExpressionMethods};
 use diesel::sqlite::SqliteConnection;
+use serde::{Deserialize, Serialize};
+
 use crate::models::{Book, NewBook};
 use crate::schema::books;
+
+pub mod models;
+pub mod schema;
 
 pub fn establish_connection() -> SqliteConnection {
     let database_url = "books";
@@ -35,6 +37,55 @@ pub fn get_books_interval(connection: &mut SqliteConnection, limit: i64, offset:
 pub fn get_books_count(connection: &mut SqliteConnection) -> SerializedResult<i64> {
     let count = books::table.count().get_result(connection)?;
     Ok(count)
+}
+
+#[derive(Serialize, Deserialize)]
+pub enum FilterType {
+    Title, Author, Status, Language
+}
+
+pub fn get_filtered_books_interval(connection: &mut SqliteConnection, limit: i64, offset: i64, keywords: String, filter: FilterType) -> SerializedResult<Vec<Book>> {
+    let statement = books::table.select(Book::as_select()).order(books::id);
+    match filter {
+        FilterType::Title => {
+            let result = statement.filter(books::title.like(format!("%{}%", keywords))).limit(limit).offset(offset).load(connection)?;
+            Ok(result)
+        }
+        FilterType::Author => {
+            let result = statement.filter(books::author.like(format!("%{}%", keywords))).limit(limit).offset(offset).load(connection)?;
+            Ok(result)
+        }
+        FilterType::Status => {
+            let result = statement.filter(books::status.like(format!("%{}%", keywords))).limit(limit).offset(offset).load(connection)?;
+            Ok(result)
+        }
+        FilterType::Language => {
+            let result = statement.filter(books::language.like(format!("%{}%", keywords))).limit(limit).offset(offset).load(connection)?;
+            Ok(result)
+        }
+    }
+}
+
+pub fn get_filtered_book_count(connection: &mut SqliteConnection, keywords: String, filter: FilterType) -> SerializedResult<i64> {
+    let statement = books::table.order(books::id);
+    match filter {
+        FilterType::Title => {
+            let result = statement.filter(books::title.like(format!("%{}%", keywords))).count().get_result(connection)?;
+            Ok(result)
+        }
+        FilterType::Author => {
+            let result = statement.filter(books::author.like(format!("%{}%", keywords))).count().get_result(connection)?;
+            Ok(result)
+        }
+        FilterType::Status => {
+            let result = statement.filter(books::status.like(format!("%{}%", keywords))).count().get_result(connection)?;
+            Ok(result)
+        }
+        FilterType::Language => {
+            let result = statement.filter(books::language.like(format!("%{}%", keywords))).count().get_result(connection)?;
+            Ok(result)
+        }
+    }
 }
 
 #[derive(Debug, thiserror::Error)]

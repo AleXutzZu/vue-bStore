@@ -6,7 +6,7 @@ import {Book} from "../main";
 const recordsPerPage = 25;
 const offset = ref(0);
 const searchedTerm = ref("");
-const selectedField = ref("title");
+const selectedField = ref("Title");
 const totalRecords = ref(100);
 const currentPage = ref(1);
 const totalPages = ref(0);
@@ -14,6 +14,10 @@ const books: Ref<Book[] | null> = ref(null);
 const loaded = ref(false);
 const errorMessage = ref("");
 const showError = ref(false);
+const appliedFilter = ref(false);
+
+const keywords = ref("");
+const filter = ref("");
 
 onMounted(async () => {
     try {
@@ -27,9 +31,26 @@ onMounted(async () => {
     }
 })
 
+async function searchBook() {
+    appliedFilter.value = true;
 
-function searchBook() {
+    filter.value = selectedField.value;
+    keywords.value = searchedTerm.value;
 
+    try {
+        offset.value = 0;
+        currentPage.value = 1;
+        totalRecords.value = await invoke("filtered_book_count", {
+            keywords: searchedTerm.value,
+            filter: selectedField.value
+        });
+        totalPages.value = Math.trunc(totalRecords.value / recordsPerPage) + (totalRecords.value % recordsPerPage == 0 ? 0 : 1);
+        await updateBooks();
+
+    } catch (error) {
+        console.log(error)
+        appliedFilter.value = false;
+    }
 }
 
 function nextPage() {
@@ -50,8 +71,17 @@ function prevPage() {
 
 async function updateBooks() {
     loaded.value = false;
+    if (appliedFilter.value) {
+        books.value = await invoke("load_books_filtered_interval", {
+            offset: offset.value,
+            limit: recordsPerPage,
+            keywords: keywords.value,
+            filter: filter.value
+        }) as Book[];
 
-    books.value = await invoke("load_books_interval", {limit: recordsPerPage, offset: offset.value}) as Book[];
+    } else {
+        books.value = await invoke("load_books_interval", {limit: recordsPerPage, offset: offset.value}) as Book[];
+    }
 
     loaded.value = true;
 }
@@ -67,16 +97,17 @@ async function updateBooks() {
                 <div class="info">
                     <p>Search by</p>
                     <select v-model="selectedField">
-                        <option value="title">Title</option>
-                        <option value="author">Author</option>
-                        <option value="status">Status</option>
-                        <option value="language">Language</option>
+                        <option value="Title">Title</option>
+                        <option value="Author">Author</option>
+                        <option value="Status">Status</option>
+                        <option value="Language">Language</option>
                     </select>
                     <button type="submit" @click="searchBook()">Go</button>
                 </div>
             </div>
             <div class="info">
-                <p>Showing {{ recordsPerPage }} records/page from {{ totalRecords }} records </p>
+                <p>Showing {{ Math.min(recordsPerPage, totalRecords - offset) }} records/page from {{ totalRecords }}
+                    records </p>
                 <div class="info">
                     <img src="/src/assets/arrow_left.png" alt="" @click="prevPage">
                     <p>Page {{ currentPage }} / {{ totalPages }}</p>
@@ -94,7 +125,7 @@ async function updateBooks() {
                     <th>Language</th>
                 </tr>
                 <tr v-for="(book, index) in books">
-                    <td>{{ index+offset + 1 }}</td>
+                    <td>{{ index + offset + 1 }}</td>
                     <td>{{ book.title }}</td>
                     <td>{{ book.author }}</td>
                     <td>{{ book.status }}</td>
