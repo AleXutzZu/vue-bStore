@@ -33,7 +33,6 @@ function modifyFont() {
         percentageMedium.value = false;
         percentageSmall.value = false;
     }
-    console.log(len);
 }
 
 onMounted(async () => {

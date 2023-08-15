@@ -1,9 +1,18 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted} from "vue";
+import {onMounted, onUnmounted, ref} from "vue";
 import {invoke} from "@tauri-apps/api/tauri";
 import {listen} from "@tauri-apps/api/event";
 
-const showedRecords = 2;
+const showedRecords = 14;
+const searchedTerm =ref("");
+const selectedField =ref("title");
+const totalRecords = ref(100);
+const currentPage = ref(1);
+const totalPages =ref(5);
+
+async function searchBook(){
+
+}
 
 const books = [
     {
@@ -69,36 +78,54 @@ const books = [
         author: "Ion Luca Caragiale",
         status: "owned",
         language: "ro",
+    },
+    {
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
+    },
+    {
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
+    },
+    {
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
     }
 ]
-
-function handleScroll(event: Event) {
-    const myDiv = document.getElementById("books-container");
-    if (myDiv.offsetHeight + myDiv.scrollTop >= myDiv.scrollHeight) {
-        console.log(myDiv.offsetHeight, myDiv.scrollTop, myDiv.scrollHeight);
-    }
-}
-
-onMounted(() => {
-    window.addEventListener('scroll', handleScroll
-    );
-})
-
-onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll
-    );
-})
 
 </script>
 
 <template>
-    <div class="container" id="books-container">
+    <div class="container" >
         <div class="tableWrap">
+            <h1>My Library</h1>
             <div class="info">
-                <h1>My Library</h1>
+                <input v-model="searchedTerm" placeholder="Enter search term"/>
                 <div class="info">
-                    <p>Showing {{ showedRecords }} records</p>
+                <p>Search by</p>
+                <select v-model="selectedField">
+                    <option value="title" >Title</option>
+                    <option value="author">Author</option>
+                    <option value="status">Status</option>
+                    <option value="language">Language</option>
+                </select>
+                <button type="submit" @click="searchBook()">Go</button>
                 </div>
+            </div>
+            <div class="info">
+                <p>Showing {{ showedRecords }} / {{totalRecords}} records </p>
+                <div class="info">
+                    <img src="/src/assets/arrow1.png" alt="" @click="">
+                    <p>Page {{currentPage}} / {{totalPages}}</p>
+                    <img src="/src/assets/arrow.png" alt="" @click="">
+                </div>
+
             </div>
 
             <table class="customers">
@@ -122,6 +149,26 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+img{
+    width: 15px;
+    filter: invert(100%) sepia(9%) saturate(0%) hue-rotate(33deg) brightness(109%) contrast(101%);
+    margin: 0 10px;
+}
+
+img:hover{
+    cursor: pointer;
+    filter: invert(50%) sepia(9%) saturate(0%) hue-rotate(33deg) brightness(109%) contrast(101%);
+    
+}
+select{
+    margin:0 15px ;
+}
+option{
+    color:black;
+}
+button{
+    margin: 0 5px;
+}
 .info {
     display: flex;
     flex-direction: row;

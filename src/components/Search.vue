@@ -6,10 +6,10 @@ const searchedTerm =ref("");
 
 <template>
 <div class="container">
-    <h1>Search book</h1>
+    <h1>Search book by ISBN</h1>
     <div>
     <input v-model="searchedTerm" placeholder="Enter search term"/>
-    <button type="submit" @click="">Add Book</button>
+    <button type="submit" @click="">Search</button>
     </div>
 </div>
 </template>
@@ -18,5 +18,8 @@ const searchedTerm =ref("");
 .container{
     align-items: flex-start;
     margin: 40px;
+}
+button{
+    margin: 0 5px;
 }
 </style>
