@@ -43,6 +43,10 @@ struct Author {
 struct ISBNBook {
     title: String,
     authors: Vec<Author>,
+    publishers: Vec<String>,
+    publish_date: String,
+    number_of_pages: i64,
+    covers: Vec<i64>
 }
 
 #[tauri::command]
