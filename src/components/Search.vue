@@ -29,58 +29,18 @@ const publishersFormatted = computed<string>(() => {
     return formatted;
 })
 
-function imageNotFound() {
-    alert('That image was not found.');
-}
-
-function imageFound() {
-    alert('That image is found and loaded');
-}
-
-async function getCover() {
-    let found = false;
-    for (let i = 0; i < ISBNBook.value?.covers.length; i++) {
-        var tester = new Image();
-
-        tester.src = "https://covers.openlibrary.org/b/id/" + ISBNBook.value?.covers[i] + "-L.jpg";
-        tester.onload = function () {
-            found = true;
-        }
-        if (found) {
-            imageLink.value = tester.src;
-            return;
-        }
-        tester.src = "https://covers.openlibrary.org/b/id/" + ISBNBook.value?.covers[i] + "-M.jpg";
-        tester.onload = function () {
-            found = true;
-        }
-        if (found) {
-            imageLink.value = tester.src;
-            return;
-        }
-        tester.src = "https://covers.openlibrary.org/b/id/" + ISBNBook.value?.covers[i] + "-S.jpg";
-        tester.onload = function () {
-            found = true;
-        }
-        if (found) {
-            imageLink.value = tester.src;
-            return;
-        }
-
-    }
-}
 
 async function searchBook() {
     loaded.value=false;
     try {
         ISBNBook.value = await invoke("search_book", {isbn: searchedTerm.value}) as ISBNBook;
+        loaded.value=true;
         const responses = await Promise.all(ISBNBook.value?.authors.map(author => fetch(`https://openlibrary.org/${author.key}.json`)));
         authors.value = responses.map(resp => resp.data.name);
     } catch (error) {
         console.log(error);
     }
-    loaded.value=true;
-    // getCover();
+    imageLink.value = `https://covers.openlibrary.org/b/id/${ISBNBook.value.covers[0]}-M.jpg`;
 }
 
 interface ISBNBook {
@@ -91,7 +51,6 @@ interface ISBNBook {
     number_of_pages: number,
     covers: number[]
 }
-
 
 </script>
 
