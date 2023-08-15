@@ -3,9 +3,10 @@
 use std::ops::DerefMut;
 use diesel::SqliteConnection;
 use tauri::State;
-use vue_bStore::{establish_connection, create_book, SerializedResult};
+use vue_bStore::{establish_connection, create_book, SerializedResult, get_books_interval};
 use std::sync::Mutex;
 use serde::{Deserialize, Serialize};
+use vue_bStore::models::Book;
 
 struct Data {
     client: Mutex<SqliteConnection>,
@@ -91,13 +92,22 @@ fn init_quote_generation(window: tauri::Window<tauri::Wry>) {
     });
 }
 
+#[tauri::command]
+fn load_books_interval(data: State<Data>, limit: i64, offset: i64) -> SerializedResult<Vec<Book>> {
+    let mut binding = data.client.lock().unwrap();
+    let connection = binding.deref_mut();
+
+    return get_books_interval(connection, limit, offset);
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(Data::new())
         .invoke_handler(tauri::generate_handler![
             add_book,
             init_quote_generation,
-            get_initial_quote
+            get_initial_quote,
+            load_books_interval
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

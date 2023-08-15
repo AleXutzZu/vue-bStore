@@ -22,9 +22,19 @@ pub fn create_book(connection: &mut SqliteConnection, title: &str, author: &str,
     Ok(())
 }
 
-pub fn get_books(connection: &mut SqliteConnection) -> SerializedResult<Vec<Book>> {
-    let result: Vec<Book> = books::table.select(Book::as_select()).load(connection)?;
+pub fn get_books_interval(connection: &mut SqliteConnection, limit: i64, offset: i64) -> SerializedResult<Vec<Book>> {
+    let result: Vec<Book> = books::table
+        .select(Book::as_select())
+        .order(books::id)
+        .limit(limit)
+        .offset(offset)
+        .load(connection)?;
     Ok(result)
+}
+
+pub fn get_books_count(connection: &mut SqliteConnection) -> SerializedResult<i64> {
+    let count = books::table.count().get_result(connection)?;
+    Ok(count)
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -36,7 +46,7 @@ pub enum Error {
     #[error(transparent)]
     Reqwest(#[from] reqwest::Error),
     #[error(transparent)]
-    SerdeJson(#[from] serde_json::Error)
+    SerdeJson(#[from] serde_json::Error),
 }
 
 // we must manually implement serde::Serialize
