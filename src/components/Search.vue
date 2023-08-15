@@ -6,7 +6,7 @@ import {fetch} from "@tauri-apps/api/http";
 const searchedTerm = ref("");
 const authors: Ref<string[]> = ref([])
 const imageLink = ref("");
-const ISBNBook: Ref<ISBNBook> = ref();
+const ISBNBook: Ref<ISBNBook | undefined> = ref();
 const loaded = ref(true);
 const errorMessage = ref("");
 const showError = ref(false);
@@ -25,6 +25,7 @@ const authorsFormatted = computed<string>(() => {
 
 const publishersFormatted = computed<string>(() => {
     let formatted: string = "";
+    if (ISBNBook.value === undefined) return "N/A";
     for (let i = 0; i < ISBNBook.value.publishers.length; ++i) {
         formatted = formatted + " " + ISBNBook.value.publishers[i];
         if (i + 1 < ISBNBook.value.publishers.length) formatted = formatted + ",";
@@ -45,7 +46,10 @@ async function searchBook() {
         ISBNBook.value = await invoke("search_book", {isbn: searchedTerm.value}) as ISBNBook;
         loaded.value=true;
         const responses = await Promise.all(ISBNBook.value?.authors.map(author => fetch(`https://openlibrary.org/${author.key}.json`)));
-        authors.value = responses.map(resp => resp.data.name);
+        authors.value = responses.map(resp => {
+            const data: any = resp.data;
+            return data.name;
+        });
         showError.value=false;
     } catch (error) {
         console.log(error);
@@ -53,7 +57,7 @@ async function searchBook() {
         showError.value = true;
         loaded.value=true;
     }
-    imageLink.value = `https://covers.openlibrary.org/b/id/${ISBNBook.value.covers[0]}-M.jpg`;
+    imageLink.value = `https://covers.openlibrary.org/b/id/${ISBNBook.value?.covers[0]}-M.jpg`;
 }
 
 interface ISBNBook {

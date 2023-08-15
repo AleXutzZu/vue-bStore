@@ -1,3 +1,4 @@
+use std::fs;
 use diesel::{Connection, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, TextExpressionMethods};
 use diesel::sqlite::SqliteConnection;
 use serde::{Deserialize, Serialize};
@@ -10,6 +11,7 @@ pub mod schema;
 
 pub fn establish_connection() -> SqliteConnection {
     let database_url = "books";
+    let _result = fs::File::create("books").unwrap();
     SqliteConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
 }

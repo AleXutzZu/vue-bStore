@@ -105,7 +105,8 @@ async function reset() {
     await updateBooks();
 }
 
-async function removeBook(id: number) {
+async function removeBook(id: number | undefined) {
+    if (!id) return;
     await invoke("remove_book", {id: id});
     offset.value = 0;
     currentPage.value = 1;
