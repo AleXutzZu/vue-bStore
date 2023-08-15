@@ -35,12 +35,32 @@ struct Quote {
 
 #[tauri::command]
 async fn get_initial_quote() -> Quote {
-    let body = reqwest::get("https://dummyjson.com/quotes/random").await.expect("Error whilst sending event")
-        .text()
-        .await.expect("Error whilst sending event");
+    let response = reqwest::get("https://dummyjson.com/quotes/random").await.ok();
 
-    let payload: Quote = serde_json::from_str(body.as_str()).expect("Error whilst fetching quote");
-    return payload;
+    let default_quote: Quote = Quote {
+        quote: "Sorry, we could not load a quote. Maybe you're offline".to_string(),
+        author: "The bStore Team".to_string(),
+    };
+
+    if let Some(resp) = response {
+        let req_body = resp.text().await.ok();
+        if let Some(body) = req_body {
+            let json: Option<Quote> = serde_json::from_str(body.as_str()).ok();
+
+            match json {
+                Some(quote) => {
+                    quote
+                }
+                None => {
+                    default_quote
+                }
+            }
+        } else {
+            return default_quote;
+        }
+    } else {
+        return default_quote;
+    }
 }
 
 
@@ -48,10 +68,24 @@ async fn get_initial_quote() -> Quote {
 fn init_quote_generation(window: tauri::Window<tauri::Wry>) {
     std::thread::spawn(move || {
         loop {
-            let req_body = reqwest::blocking::get("https://dummyjson.com/quotes/random").expect("Error whilst fetching quote").text().expect("Error whilst fetching quote");
-            let payload: Quote = serde_json::from_str(req_body.as_str()).expect("Error whilst fetching quote");
+            let req_body = reqwest::blocking::get("https://dummyjson.com/quotes/random").ok();
 
-            window.emit("update_quote", payload).expect("Error whilst sending event");
+            let mut payload: Quote = Quote {
+                quote: "Sorry, we could not load a quote. Maybe you're offline".to_string(),
+                author: "The bStore Team".to_string(),
+            };
+
+            if let Some(response) = req_body {
+                let req_body = response.text().ok();
+                if let Some(body) = req_body {
+                    let json: Option<Quote> = serde_json::from_str(body.as_str()).ok();
+                    match json {
+                        Some(v) => { payload = v }
+                        None => {}
+                    }
+                }
+            }
+            let _result = window.emit("update_quote", payload);
             std::thread::sleep(std::time::Duration::from_secs(150));
         }
     });

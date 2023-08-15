@@ -1,7 +1,7 @@
 pub mod models;
 pub mod schema;
 
-use diesel::{Connection, RunQueryDsl, SelectableHelper};
+use diesel::{Connection, QueryDsl, RunQueryDsl, SelectableHelper};
 use diesel::sqlite::SqliteConnection;
 use crate::models::{Book, NewBook};
 use crate::schema::books;
@@ -14,8 +14,6 @@ pub fn establish_connection() -> SqliteConnection {
 
 
 pub fn create_book(connection: &mut SqliteConnection, title: &str, author: &str, status: Option<&str>, language: &str) -> SerializedResult<()> {
-    use crate::schema::books;
-
     let new_book = NewBook { title, author, status, language };
 
     diesel::insert_into(books::table)
@@ -24,9 +22,9 @@ pub fn create_book(connection: &mut SqliteConnection, title: &str, author: &str,
     Ok(())
 }
 
-pub fn get_books(connection: &mut SqliteConnection) -> Vec<Book> {
-    use crate::schema::books;
-    books::table.select(Book::as_select()).load(connection).expect("Error loading posts")
+pub fn get_books(connection: &mut SqliteConnection) -> SerializedResult<Vec<Book>> {
+    let result: Vec<Book> = books::table.select(Book::as_select()).load(connection)?;
+    Ok(result)
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -35,6 +33,10 @@ pub enum Error {
     Io(#[from] std::io::Error),
     #[error(transparent)]
     Diesel(#[from] diesel::result::Error),
+    #[error(transparent)]
+    Reqwest(#[from] reqwest::Error),
+    #[error(transparent)]
+    SerdeJson(#[from] serde_json::Error)
 }
 
 // we must manually implement serde::Serialize
