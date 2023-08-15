@@ -35,7 +35,7 @@ const publishersFormatted = computed<string>(() => {
 
 
 async function searchBook() {
-    if (!searchedTerm.value.match("/([0-9]{10})/") && !searchedTerm.value.match("/[0-9]{13}/")) {
+    if (!searchedTerm.value.match(/^\d{10}$/) && !searchedTerm.value.match(/^\d{13}$/)) {
         showError.value = true;
         errorMessage.value = "Invalid ISBN"
         return;
