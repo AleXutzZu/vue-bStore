@@ -4,9 +4,6 @@ import {invoke} from "@tauri-apps/api/tauri";
 const searchedTerm =ref("");
 const imageLink=ref("https://covers.openlibrary.org/b/id/240726-M.jpg");
 
-async function addData(){
-    await invoke("", {});
-}
 
 async function searchBook(){
     let a=await invoke("search_book", {isbn:searchedTerm.value});
@@ -17,21 +14,20 @@ async function searchBook(){
 
 <template>
 <div class="container">
-    <button @click="addData()"></button>
     <h1>Search book by ISBN</h1>
     <div>
-    <input v-model="searchedTerm" placeholder="Enter the 13-lettered ISBN"/>
-    <button type="submit" @click="searchBook()">Search</button>
+    <input v-model="searchedTerm" placeholder="Enter 10 or 13 characters"/>
+    <button type="submit" @click="">Search</button>
     </div>
     <div class="book">
         <div>
-            <h3>Title: {{}}</h3> //url//title
-            <h3>Author: {{}}</h3> //authors
-            <h3>Number of pages: {{}}</h3> //authors//number_of_pages
-            <h3>Publish date: {{}}</h3> //publish_places//publish_date
-            <h3>Publisher: {{}}</h3> //publishers
+            <h3>Title: {{}}</h3>
+            <h3>Author: {{}}</h3>
+            <h3>Number of pages: {{}}</h3>
+            <h3>Publish date: {{}}</h3>
+            <h3>Publisher: {{}}</h3>
         </div>
-        <div>//cover//medium
+        <div>
             <img :src="imageLink" alt="">
         </div>
     </div>
@@ -40,9 +36,18 @@ async function searchBook(){
 </template>
 
 <style scoped>
+img{
+    width: 200px;
+}
+
+h3{
+    text-align: start;
+}
 .container{
     align-items: flex-start;
     margin: 40px;
+    width: 80%;
+    height: fit-content !important;
 }
 button{
     margin: 0 5px;
@@ -50,6 +55,7 @@ button{
 .book{
     display: flex;
     flex-direction: row;
-
+    justify-content: space-around;
+    align-items: center;
 }
 </style>

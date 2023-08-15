@@ -76,7 +76,7 @@ async function updateBooks() {
                 </div>
             </div>
             <div class="info">
-                <p>Showing {{ recordsPerPage }} / {{ totalRecords }} records </p>
+                <p>Showing {{ recordsPerPage }} records/page from {{ totalRecords }} records </p>
                 <div class="info">
                     <img src="/src/assets/arrow_left.png" alt="" @click="prevPage">
                     <p>Page {{ currentPage }} / {{ totalPages }}</p>
@@ -94,13 +94,15 @@ async function updateBooks() {
                     <th>Language</th>
                 </tr>
                 <tr v-for="(book, index) in books">
-                    <td>{{ index + 1 }}</td>
+                    <td>{{ index+offset + 1 }}</td>
                     <td>{{ book.title }}</td>
                     <td>{{ book.author }}</td>
                     <td>{{ book.status }}</td>
                     <td>{{ book.language }}</td>
                 </tr>
             </table>
+            <br>
+            <br>
         </div>
     </div>
 </template>
