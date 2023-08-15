@@ -42,7 +42,7 @@
       {
         "fullscreen": false,
         "resizable": false,
-        "title": "vue-bStore",
+        "title": "bStore",
         "width": 800,
         "height": 600
       }
