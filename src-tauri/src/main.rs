@@ -3,7 +3,7 @@
 use std::ops::DerefMut;
 use diesel::SqliteConnection;
 use tauri::State;
-use vue_bStore::{establish_connection, create_book, SerializedResult, get_books_interval, get_books_count, FilterType, get_filtered_books_interval, get_filtered_book_count};
+use vue_bStore::{establish_connection, create_book, SerializedResult, get_books_interval, get_books_count, FilterType, get_filtered_books_interval, get_filtered_book_count, delete_book};
 use std::sync::Mutex;
 use serde::{Deserialize, Serialize};
 use vue_bStore::models::Book;
@@ -36,7 +36,7 @@ struct Quote {
 
 #[derive(Serialize, Deserialize)]
 struct Author {
-    key: String
+    key: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -46,7 +46,7 @@ struct ISBNBook {
     publishers: Vec<String>,
     publish_date: String,
     number_of_pages: i64,
-    covers: Vec<i64>
+    covers: Vec<i64>,
 }
 
 #[tauri::command]
@@ -147,6 +147,14 @@ fn filtered_book_count(data: State<Data>, filter: FilterType, keywords: String) 
     get_filtered_book_count(connection, keywords, filter)
 }
 
+#[tauri::command]
+fn remove_book(data: State<Data>, id: i64) -> SerializedResult<()> {
+    let mut binding = data.client.lock().unwrap();
+    let connection = binding.deref_mut();
+
+    delete_book(connection, id)
+}
+
 fn main() {
     tauri::Builder::default()
         .manage(Data::new())
@@ -158,7 +166,8 @@ fn main() {
             book_count,
             search_book,
             load_books_filtered_interval,
-            filtered_book_count
+            filtered_book_count,
+            remove_book
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

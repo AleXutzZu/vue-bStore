@@ -88,6 +88,11 @@ pub fn get_filtered_book_count(connection: &mut SqliteConnection, keywords: Stri
     }
 }
 
+pub fn delete_book(connection: &mut SqliteConnection, id: i64) -> SerializedResult<()> {
+    diesel::delete(books::table.filter(books::id.eq(id))).execute(connection)?;
+    Ok(())
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error(transparent)]
