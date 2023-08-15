@@ -24,7 +24,7 @@ onMounted(async () => {
         totalRecords.value = await invoke("book_count", {});
         totalPages.value = Math.trunc(totalRecords.value / recordsPerPage) + (totalRecords.value % recordsPerPage == 0 ? 0 : 1);
         await updateBooks();
-        showError.value=false;
+        showError.value = false;
     } catch (error) {
         console.log(error);
         showError.value = true;
@@ -47,12 +47,12 @@ async function searchBook() {
         });
         totalPages.value = Math.trunc(totalRecords.value / recordsPerPage) + (totalRecords.value % recordsPerPage == 0 ? 0 : 1);
         await updateBooks();
-        showError.value=false;
+        showError.value = false;
 
     } catch (error) {
         //console.log(error)
-        errorMessage.value="Could not access database. You may be offline.";
-        showError.value=true;
+        errorMessage.value = "Could not access database. You may be offline.";
+        showError.value = true;
         appliedFilter.value = false;
     }
 }
@@ -75,7 +75,7 @@ function prevPage() {
 
 async function updateBooks() {
     loaded.value = false;
-    try{
+    try {
         if (appliedFilter.value) {
             books.value = await invoke("load_books_filtered_interval", {
                 offset: offset.value,
@@ -88,15 +88,16 @@ async function updateBooks() {
             books.value = await invoke("load_books_interval", {limit: recordsPerPage, offset: offset.value}) as Book[];
         }
         loaded.value = true;
-        showError.value=false;
-    }catch(error){
-        errorMessage.value="Could not access database. You may be offline.";
-        showError.value=true;
+        showError.value = false;
+    } catch (error) {
+        errorMessage.value = "Could not access database. You may be offline.";
+        showError.value = true;
+        loaded.value = true;
     }
 }
 
-async function reset(){
-    appliedFilter.value=false;
+async function reset() {
+    appliedFilter.value = false;
     offset.value = 0;
     currentPage.value = 1;
     totalRecords.value = await invoke("book_count");
@@ -104,8 +105,17 @@ async function reset(){
     await updateBooks();
 }
 
-async function removeBook(id: number){
-    await invoke("remove_book", {id:id});
+async function removeBook(id: number) {
+    await invoke("remove_book", {id: id});
+    offset.value = 0;
+    currentPage.value = 1;
+    totalRecords.value = await (appliedFilter.value ?
+        invoke("filtered_book_count", {
+        keywords: keywords.value,
+        filter: filter.value
+    }) : invoke("book_count"));
+    totalPages.value = Math.trunc(totalRecords.value / recordsPerPage) + (totalRecords.value % recordsPerPage == 0 ? 0 : 1);
+    await updateBooks();
 }
 
 </script>
@@ -125,7 +135,7 @@ async function removeBook(id: number){
                         <option value="Status">Status</option>
                         <option value="Language">Language</option>
                     </select>
-                    <button type="submit" @click="searchBook()" class="specialButton" >Go</button>
+                    <button type="submit" @click="searchBook()" class="specialButton">Go</button>
                 </div>
             </div>
             <div class="info">
@@ -139,10 +149,15 @@ async function removeBook(id: number){
 
             </div>
             <h2 v-if="showError" style="color: lightpink;">
-                {{errorMessage}}
+                {{ errorMessage }}
             </h2>
             <div class="lds-ring" v-if="!loaded">
-                <br><br><div></div><div></div><div></div><div></div></div>
+                <br><br>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
             <table class="customers" v-else>
                 <tr>
                     <th>No</th>
@@ -158,7 +173,9 @@ async function removeBook(id: number){
                     <td>{{ book.author }}</td>
                     <td>{{ book.status }}</td>
                     <td>{{ book.language }}</td>
-                    <td><button class="x" @click="removeBook(book.id)">X</button></td>
+                    <td>
+                        <button class="x" @click="removeBook(book.id)">X</button>
+                    </td>
                 </tr>
             </table>
             <br>
@@ -168,15 +185,17 @@ async function removeBook(id: number){
 </template>
 
 <style scoped>
-.x{
+.x {
     padding: 0.3em 0.6em;
-    color:#e8e8e8;
+    color: #e8e8e8;
 }
+
 .x:active {
     border-color: #182940;
     color: #182940;
     background-color: #e8e8e8;
 }
+
 img {
     width: 15px;
     filter: invert(100%) sepia(9%) saturate(0%) hue-rotate(33deg) brightness(109%) contrast(101%);
@@ -258,7 +277,7 @@ p {
     background-color: #ddd;
 }
 
-.container{
+.container {
     min-height: 100vh;
 }
 
@@ -268,6 +287,7 @@ p {
     width: 80px;
     height: 80px;
 }
+
 .lds-ring div {
     box-sizing: border-box;
     display: block;
@@ -280,15 +300,19 @@ p {
     animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
     border-color: #fff transparent transparent transparent;;
 }
+
 .lds-ring div:nth-child(1) {
     animation-delay: -0.45s;
 }
+
 .lds-ring div:nth-child(2) {
     animation-delay: -0.3s;
 }
+
 .lds-ring div:nth-child(3) {
     animation-delay: -0.15s;
 }
+
 @keyframes lds-ring {
     0% {
         transform: rotate(0deg);
