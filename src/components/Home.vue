@@ -3,98 +3,101 @@ import {onMounted, onUnmounted} from "vue";
 import {invoke} from "@tauri-apps/api/tauri";
 import {listen} from "@tauri-apps/api/event";
 
-const showedRecords=2;
+const showedRecords = 2;
 
-const books=[
-{
-    title:"Amintiri din copilarie",
-    author:"Ion Luca Caragiale",
-    status:"owned",
-    language:"ro",
-},
+const books = [
     {
-        title:"Amintiri din copilarie",
-        author:"Ion Luca Caragiale",
-        status:"owned",
-        language:"ro",
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
     },
     {
-        title:"Amintiri din copilarie",
-        author:"Ion Luca Caragiale",
-        status:"owned",
-        language:"ro",
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
     },
     {
-        title:"Amintiri din copilarie",
-        author:"Ion Luca Caragiale",
-        status:"owned",
-        language:"ro",
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
     },
     {
-        title:"Amintiri din copilarie",
-        author:"Ion Luca Caragiale",
-        status:"owned",
-        language:"ro",
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
     },
     {
-        title:"Amintiri din copilarie",
-        author:"Ion Luca Caragiale",
-        status:"owned",
-        language:"ro",
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
+    },
+    {
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
     }, {
-        title:"Amintiri din copilarie",
-        author:"Ion Luca Caragiale",
-        status:"owned",
-        language:"ro",
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
     }
     , {
-        title:"Amintiri din copilarie",
-        author:"Ion Luca Caragiale",
-        status:"owned",
-        language:"ro",
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
     },
     {
-        title:"Amintiri din copilarie",
-        author:"Ion Luca Caragiale",
-        status:"owned",
-        language:"ro",
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
     }, {
-        title:"Amintiri din copilarie",
-        author:"Ion Luca Caragiale",
-        status:"owned",
-        language:"ro",
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
     },
     {
-        title:"Amintiri din copilarie",
-        author:"Ion Luca Caragiale",
-        status:"owned",
-        language:"ro",
+        title: "Amintiri din copilarie",
+        author: "Ion Luca Caragiale",
+        status: "owned",
+        language: "ro",
     }
 ]
 
-function handleScroll(event:any) {
-    console.log(event.target);
+function handleScroll(event: Event) {
+    const myDiv = document.getElementById("books-container");
+    if (myDiv.offsetHeight + myDiv.scrollTop >= myDiv.scrollHeight) {
+        console.log(myDiv.offsetHeight, myDiv.scrollTop, myDiv.scrollHeight);
+    }
 }
 
-onMounted( () => {
-    document.getElementById("app")?.addEventListener('scroll', handleScroll
-    );console.log(document.getElementById("app")?.offsetHeight);
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll
+    );
 })
 
 onUnmounted(() => {
-    document.getElementById("app")?.removeEventListener('scroll', handleScroll
+    window.removeEventListener('scroll', handleScroll
     );
 })
 
 </script>
 
 <template>
-    <div class="container"  ref="el">
+    <div class="container" id="books-container">
         <div class="tableWrap">
             <div class="info">
                 <h1>My Library</h1>
                 <div class="info">
-                    <p>Showing {{showedRecords}} records</p>
+                    <p>Showing {{ showedRecords }} records</p>
                 </div>
             </div>
 
@@ -106,32 +109,35 @@ onUnmounted(() => {
                     <th>Status</th>
                     <th>Language</th>
                 </tr>
-                <tr v-for="(book, index) in books" >
-                    <td>{{index+1}}</td>
-                    <td>{{book.title}}</td>
-                    <td>{{book.author}}</td>
-                    <td>{{book.status}}</td>
-                    <td>{{book.language}}</td>
+                <tr v-for="(book, index) in books">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.author }}</td>
+                    <td>{{ book.status }}</td>
+                    <td>{{ book.language }}</td>
                 </tr>
             </table>
         </div>
-        </div>
+    </div>
 </template>
 
 <style scoped>
-.info{
+.info {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
 }
-h1{
+
+h1 {
     text-align: start;
 }
-p{
+
+p {
     text-align: end;
 }
-.tableWrap{
+
+.tableWrap {
     justify-content: start;
     align-items: start;
     margin: 0 40px;
@@ -156,16 +162,19 @@ p{
     padding: 8px;
 }
 
-.customers td{
+.customers td {
     color: #182940;
 }
 
-.customers tr:nth-child(even){
-    background-color: #f2f2f2 ;
-}
-.customers tr:nth-child(odd){
-    background-color: #b1bdc1 ;
+.customers tr:nth-child(even) {
+    background-color: #f2f2f2;
 }
 
-.customers tr:hover {background-color: #ddd;}
+.customers tr:nth-child(odd) {
+    background-color: #b1bdc1;
+}
+
+.customers tr:hover {
+    background-color: #ddd;
+}
 </style>
