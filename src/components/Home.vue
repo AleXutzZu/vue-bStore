@@ -72,19 +72,17 @@ const books=[
     }
 ]
 
-function handleScroll(event: any) {
-    console.log(window.scrollY);
+function handleScroll(event:any) {
+    console.log(event.target);
 }
 
 onMounted( () => {
-    window.addEventListener('scroll', handleScroll
-       // this.$refs.el.offsetHeight, this.$refs.el.scrollTop, this.$refs.el.scrollHeight
-    );
+    document.getElementById("app")?.addEventListener('scroll', handleScroll
+    );console.log(document.getElementById("app")?.offsetHeight);
 })
 
 onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll
-        // this.$refs.el.offsetHeight, this.$refs.el.scrollTop, this.$refs.el.scrollHeight
+    document.getElementById("app")?.removeEventListener('scroll', handleScroll
     );
 })
 
