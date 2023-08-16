@@ -1,5 +1,6 @@
 use diesel::{Connection, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, TextExpressionMethods};
 use diesel::sqlite::SqliteConnection;
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use serde::{Deserialize, Serialize};
 
 use crate::models::{Book, NewBook};
@@ -8,9 +9,14 @@ use crate::schema::books;
 pub mod models;
 pub mod schema;
 
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+
 pub fn establish_connection(database_url: &str) -> SqliteConnection {
-    SqliteConnection::establish(database_url)
-        .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
+    let mut connection = SqliteConnection::establish(database_url)
+        .unwrap_or_else(|_| panic!("Error connecting to {}", database_url));
+
+    connection.run_pending_migrations(MIGRATIONS).unwrap();
+    return connection;
 }
 
 
@@ -40,7 +46,10 @@ pub fn get_books_count(connection: &mut SqliteConnection) -> SerializedResult<i6
 
 #[derive(Serialize, Deserialize)]
 pub enum FilterType {
-    Title, Author, Status, Language
+    Title,
+    Author,
+    Status,
+    Language,
 }
 
 pub fn get_filtered_books_interval(connection: &mut SqliteConnection, limit: i64, offset: i64, keywords: String, filter: FilterType) -> SerializedResult<Vec<Book>> {

@@ -171,9 +171,6 @@ fn main() {
 
             *(&mut *state.client.lock().unwrap()) = Some(establish_connection( &(appdata_dir_path.as_path().display().to_string())));
 
-            if fs::metadata(&appdata_dir_path).is_err() {
-                fs::copy(books_db_path, appdata_dir_path).expect("Aici s-a dus");
-            }
             Ok(())
         })
         .manage(Data::new())
