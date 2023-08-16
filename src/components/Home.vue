@@ -50,7 +50,6 @@ async function searchBook() {
         showError.value = false;
 
     } catch (error) {
-        //console.log(error)
         errorMessage.value = "Could not access database. You may be offline.";
         showError.value = true;
         appliedFilter.value = false;
@@ -107,16 +106,21 @@ async function reset() {
 
 async function removeBook(id: number | undefined) {
     if (!id) return;
-    await invoke("remove_book", {id: id});
-    offset.value = 0;
-    currentPage.value = 1;
-    totalRecords.value = await (appliedFilter.value ?
-        invoke("filtered_book_count", {
-        keywords: keywords.value,
-        filter: filter.value
-    }) : invoke("book_count"));
-    totalPages.value = Math.trunc(totalRecords.value / recordsPerPage) + (totalRecords.value % recordsPerPage == 0 ? 0 : 1);
-    await updateBooks();
+    try {
+        await invoke("remove_book", {id: id});
+        offset.value = 0;
+        currentPage.value = 1;
+        totalRecords.value = await (appliedFilter.value ?
+            invoke("filtered_book_count", {
+                keywords: keywords.value,
+                filter: filter.value
+            }) : invoke("book_count"));
+        totalPages.value = Math.trunc(totalRecords.value / recordsPerPage) + (totalRecords.value % recordsPerPage == 0 ? 0 : 1);
+        await updateBooks();
+    } catch (error) {
+        errorMessage.value = "Could not access database. You may be offline.";
+        showError.value = true;
+    }
 }
 
 </script>
@@ -152,7 +156,7 @@ async function removeBook(id: number | undefined) {
             <h2 v-if="showError" style="color: lightpink;">
                 {{ errorMessage }}
             </h2>
-            <div class="lds-ring" v-if="!loaded">
+            <div class="lds-ring" v-else-if="!loaded">
                 <br><br>
                 <div></div>
                 <div></div>
