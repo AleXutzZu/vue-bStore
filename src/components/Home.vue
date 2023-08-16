@@ -231,6 +231,7 @@ button {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    font-size: 15 px;
 }
 
 h1 {
