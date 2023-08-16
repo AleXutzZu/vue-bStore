@@ -42,21 +42,23 @@ async function searchBook() {
         return;
     }
 
-    loaded.value=false;
+    loaded.value = false;
     try {
+        ISBNBook.value = undefined;
         ISBNBook.value = await invoke("search_book", {isbn: searchedTerm.value}) as ISBNBook;
-        loaded.value=true;
+        loaded.value = true;
         const responses = await Promise.all(ISBNBook.value?.authors.map(author => fetch(`https://openlibrary.org/${author.key}.json`)));
         authors.value = responses.map(resp => {
             const data: any = resp.data;
             return data.name;
         });
-        showError.value=false;
+        showError.value = false;
     } catch (error) {
         console.log(error);
         errorMessage.value = "Could not find any books with that ISBN. You may be offline.";
         showError.value = true;
-        loaded.value=true;
+        loaded.value = true;
+        ISBNBook.value = undefined;
     }
     imageLink.value = `https://covers.openlibrary.org/b/id/${ISBNBook.value?.covers[0]}-M.jpg`;
 }
@@ -93,11 +95,16 @@ interface ISBNBook {
         </div>
         <h2 v-if="showError">
             <br>
-            {{errorMessage}}
+            {{ errorMessage }}
         </h2>
         <div v-if="!loaded" style="display: flex; justify-content:center; flex-direction: row; width:115%">
-            <div class="lds-ring" >
-                <br><br><div></div><div></div><div></div><div></div></div>
+            <div class="lds-ring">
+                <br><br>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
         </div>
 
     </div>
@@ -122,7 +129,8 @@ h3 {
 button {
     margin: 0 5px;
 }
-h2{
+
+h2 {
     width: 115%;
     color: lightpink;
 }
@@ -142,6 +150,7 @@ h2{
     width: 80px;
     height: 80px;
 }
+
 .lds-ring div {
     box-sizing: border-box;
     display: block;
@@ -154,15 +163,19 @@ h2{
     animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
     border-color: #fff transparent transparent transparent;;
 }
+
 .lds-ring div:nth-child(1) {
     animation-delay: -0.45s;
 }
+
 .lds-ring div:nth-child(2) {
     animation-delay: -0.3s;
 }
+
 .lds-ring div:nth-child(3) {
     animation-delay: -0.15s;
 }
+
 @keyframes lds-ring {
     0% {
         transform: rotate(0deg);
