@@ -1,16 +1,17 @@
-# Tauri + Vue 3 + TypeScript
+# Overview
+<br><br>
+![logo](https://github.com/user-attachments/assets/f56ec431-2c9d-4a83-a414-032cc0a0329f)
+<br><br>
+- Desktop application developed for the [IPWorkshop 2023](https://www.ipworkshop.ro) summer camp
+- Personal local book database
+- Look-up by ISBN for 20M+ books and publications with [OpenLibrary API](https://openlibrary.org/developers/api) by Internet Archive
+- Greeted by a random quote when entering a new book with [DummyJSON](https://dummyjson.com/docs/quotes) quotes
+<br><br>
+![image](https://github.com/user-attachments/assets/84d365d0-3853-418c-936f-70de193a4180)
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
-
-## Type Support For `.vue` Imports in TS
-
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
-
-1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
-2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
-
-You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+## Tech Stack
+<br><br>
+![image](https://github.com/user-attachments/assets/b5392ed1-57f3-4f75-9d55-6cfedffdcb69)
+<br><br>
+- Tauri, Vite, Vue and Rust
+- Diesel for database management and fast CRUD operations
