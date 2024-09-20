@@ -16,11 +16,9 @@
 
 
 ###
-<br>
+<h2>Tech Stack</h2>
 <ul>
   <li> Tauri, Vite, Vue and Rust </li>
   <li> Diesel for database management and fast CRUD operations </li>
 </ul>
-<br>
-<img align="center" src="https://github.com/user-attachments/assets/b5392ed1-57f3-4f75-9d55-6cfedffdcb69"/>
-<br><br>
+
